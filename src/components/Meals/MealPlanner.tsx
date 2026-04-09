@@ -79,7 +79,7 @@ const MealPlanner: React.FC = () => {
                     return (
                         <div
                             key={meal.id}
-                            className={`rounded-xl border px-3 py-4 flex flex-col gap-4 transition-all duration-300 ${
+                            className={`rounded-xl border px-3 py-5 flex flex-col gap-4 transition-all duration-300 min-h-[260px] ${
                                 meal.completed ? 'bg-green-500/5 border-green-500/20' :
                                 meal.skipped ? 'opacity-50 border-border/40 bg-card/40' :
                                 'bg-background/60 border-border hover:border-white/15'

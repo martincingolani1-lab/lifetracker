@@ -115,10 +115,10 @@ const SupplementTracker: React.FC = () => {
   );
 
   return (
-    <div className="bg-card rounded-2xl p-4 shadow-sm relative overflow-hidden h-full flex flex-col border border-border">
+    <div className="bg-card rounded-2xl p-3 shadow-sm relative overflow-hidden h-full flex flex-col border border-border">
       <div className="absolute top-0 right-0 w-32 h-32 bg-purple-500/5 rounded-full blur-3xl -mr-16 -mt-16 pointer-events-none" />
 
-      <div className="flex items-center justify-between mb-4">
+      <div className="flex items-center justify-between mb-2">
         <h3 className="text-base font-semibold tracking-tight text-text-main flex items-center gap-2">
           <Activity size={16} className="text-primary" />
           Suplementación

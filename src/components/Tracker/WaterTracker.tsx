@@ -21,10 +21,10 @@ const WaterTracker: React.FC = () => {
   };
 
   return (
-    <div className="bg-card/40 backdrop-blur-xl border border-border rounded-2xl p-4 shadow-xl flex items-center justify-between group overflow-hidden relative transition-all duration-500">
+    <div className="bg-card/40 backdrop-blur-xl border border-border rounded-2xl p-3 shadow-xl flex items-center justify-between group overflow-hidden relative transition-all duration-500">
       <div className="absolute -bottom-8 -right-8 w-24 h-24 bg-blue-500/10 blur-[40px] rounded-full pointer-events-none" />
 
-      <div className="flex flex-col gap-3 relative z-10">
+      <div className="flex flex-col gap-2 relative z-10">
         <div className="flex items-center gap-2">
           <div className="p-2 bg-blue-500/15 rounded-xl text-blue-400">
             <Droplets size={16} strokeWidth={2.5} />
@@ -36,7 +36,7 @@ const WaterTracker: React.FC = () => {
         </div>
 
         <div className="flex items-baseline gap-1">
-          <span className="text-3xl font-display font-black text-text-main tracking-tighter animate-number">{waterIntake}</span>
+          <span className="text-2xl font-display font-black text-text-main tracking-tighter animate-number">{waterIntake}</span>
           <span className="text-xs font-bold text-text-muted">/ </span>
           {isEditing ? (
             <div className="flex items-center gap-1">
@@ -62,8 +62,8 @@ const WaterTracker: React.FC = () => {
 
       {/* Bottle */}
       <div className="relative flex flex-col items-center gap-0.5">
-        <div className="w-6 h-2 bg-white/20 border border-border rounded-t-lg z-20" />
-        <div className="relative w-12 h-20 bg-white/5 rounded-b-2xl rounded-t-sm border-2 border-border overflow-hidden z-10">
+        <div className="w-5 h-1.5 bg-white/20 border border-border rounded-t-lg z-20" />
+        <div className="relative w-10 h-16 bg-white/5 rounded-b-2xl rounded-t-sm border-2 border-border overflow-hidden z-10">
           <div className="absolute top-0 left-1.5 w-1 h-full bg-white/10 rounded-full z-20" />
           <motion.div className="absolute bottom-0 w-full bg-gradient-to-t from-blue-600 via-blue-500 to-cyan-400"
             initial={{ height: 0 }} animate={{ height: `${percentage}%` }} transition={{ type: "spring", stiffness: 30, damping: 15 }}>

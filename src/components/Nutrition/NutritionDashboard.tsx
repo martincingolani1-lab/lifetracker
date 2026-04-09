@@ -13,9 +13,9 @@ const NutritionDashboard: React.FC = () => {
         </div>
 
         {/* Derecha: Comidas arriba, Agua + Suplementos abajo */}
-        <div className="lg:col-span-9 flex flex-col gap-6">
+        <div className="lg:col-span-9 flex flex-col gap-4">
           <MealPlanner />
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <WaterTracker />
             <SupplementTracker />
           </div>
