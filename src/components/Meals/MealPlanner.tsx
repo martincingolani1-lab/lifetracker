@@ -79,7 +79,7 @@ const MealPlanner: React.FC = () => {
                     return (
                         <div
                             key={meal.id}
-                            className={`rounded-xl border p-3 flex flex-col gap-3 transition-all duration-300 ${
+                            className={`rounded-xl border px-3 py-4 flex flex-col gap-4 transition-all duration-300 ${
                                 meal.completed ? 'bg-green-500/5 border-green-500/20' :
                                 meal.skipped ? 'opacity-50 border-border/40 bg-card/40' :
                                 'bg-background/60 border-border hover:border-white/15'
@@ -118,7 +118,7 @@ const MealPlanner: React.FC = () => {
                             </div>
 
                             {/* Macro inputs */}
-                            <div className="space-y-1.5">
+                            <div className="space-y-2 flex-1 justify-center flex flex-col">
                                 {macroFields.map((f) => (
                                     <div key={f.key} className="flex items-center gap-1.5">
                                         <span className={`text-[10px] font-black w-3 flex-shrink-0 ${f.color}`}>{f.label}</span>
@@ -128,7 +128,7 @@ const MealPlanner: React.FC = () => {
                                             onChange={(e) => handleMacroChange(meal.id, f.key, e.target.value)}
                                             placeholder={suggested ? String(suggested[f.key]) : '0'}
                                             disabled={meal.skipped}
-                                            className={`w-full bg-background/80 border border-border rounded-lg py-1 px-2 text-xs font-semibold text-text-main focus:outline-none ${f.border} placeholder:text-text-muted/30 transition-colors`}
+                                            className={`w-full bg-white/5 border border-white/10 rounded-lg py-1.5 px-2 text-xs font-semibold text-text-main focus:outline-none focus:bg-white/8 ${f.border} placeholder:text-text-muted/30 transition-colors`}
                                         />
                                         <span className="text-[10px] text-text-muted/50 flex-shrink-0">g</span>
                                     </div>
