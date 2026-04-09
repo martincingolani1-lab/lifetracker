@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="es"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>LifeTracker Desktop Nutrition Dashboard</title>
+<!-- Fonts -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<!-- Icons -->
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#11d473",
+                        "primary-dark": "#0ea358",
+                        "background-light": "#f6f8f7",
+                        "background-dark": "#0F2E2E", /* Custom requested dark teal */
+                        "card-dark": "#163838",
+                        "accent-gold": "#FCD34D",
+                        "accent-blue": "#3B82F6",
+                    },
+                    fontFamily: {
+                        "display": ["Manrope", "sans-serif"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.5rem",
+                        "lg": "1rem",
+                        "xl": "1.5rem",
+                        "2xl": "1.75rem",
+                        "3xl": "2rem",
+                        "full": "9999px"
+                    },
+                    backdropBlur: {
+                        xs: '2px',
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        /* Custom scrollbar for webkit browsers */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: transparent; 
+        }
+        ::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.1); 
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(255, 255, 255, 0.2); 
+        }
+        
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .glass-card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            transition: all 0.3s ease;
+        }
+
+        .glass-card:hover {
+            background: rgba(255, 255, 255, 0.08);
+            transform: translateY(-2px);
+            border-color: rgba(17, 212, 115, 0.3);
+        }
+
+        .dashed-card {
+            background: rgba(255, 255, 255, 0.02);
+            border: 2px dashed rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(4px);
+            transition: all 0.2s ease;
+        }
+
+        .dashed-card:hover {
+            background: rgba(255, 255, 255, 0.05);
+            border-color: rgba(17, 212, 115, 0.4);
+            cursor: pointer;
+        }
+
+        /* Gradient Text */
+        .text-gradient {
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-image: linear-gradient(to right, #FCD34D, #11d473);
+        }
+    </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark font-display text-slate-800 dark:text-white h-screen overflow-hidden flex flex-col">
+<!-- Header -->
+<header class="fixed top-0 w-full z-50 glass-panel border-b border-white/5 h-20 px-8 flex items-center justify-between shadow-lg shadow-black/5">
+<div class="flex items-center gap-12">
+<!-- Logo -->
+<div class="flex items-center gap-2">
+<div class="w-10 h-10 rounded-xl bg-gradient-to-br from-primary to-emerald-800 flex items-center justify-center shadow-lg shadow-primary/20">
+<span class="material-icons-round text-white">monitor_heart</span>
+</div>
+<span class="text-xl font-bold tracking-tight">LifeTracker</span>
+</div>
+<!-- Nav -->
+<nav class="hidden md:flex items-center gap-2">
+<a class="px-5 py-2.5 rounded-xl text-sm font-medium text-slate-400 hover:text-white hover:bg-white/5 transition-colors" href="#">Dashboard</a>
+<a class="px-5 py-2.5 rounded-xl text-sm font-bold bg-white/10 text-primary shadow-inner ring-1 ring-white/5" href="#">Nutrición</a>
+<a class="px-5 py-2.5 rounded-xl text-sm font-medium text-slate-400 hover:text-white hover:bg-white/5 transition-colors" href="#">Entreno</a>
+<a class="px-5 py-2.5 rounded-xl text-sm font-medium text-slate-400 hover:text-white hover:bg-white/5 transition-colors" href="#">Progreso</a>
+</nav>
+</div>
+<!-- User -->
+<div class="flex items-center gap-6">
+<button class="relative text-slate-400 hover:text-white transition-colors">
+<span class="material-icons-round">notifications_none</span>
+<span class="absolute top-0 right-0 w-2 h-2 bg-primary rounded-full ring-2 ring-background-dark"></span>
+</button>
+<div class="flex items-center gap-3 pl-6 border-l border-white/10">
+<div class="text-right hidden lg:block">
+<p class="text-sm font-bold leading-none">Alex Morgan</p>
+<p class="text-xs text-slate-400 mt-1">Plan Premium</p>
+</div>
+<img class="w-10 h-10 rounded-full border-2 border-white/10 object-cover" data-alt="User profile picture" src="https://lh3.googleusercontent.com/aida-public/AB6AXuArV_8AKQYMEZ5Cn_c2aDzIuOZdEbAnq9L3d6Swbnyv2oNk_4_DBUf8djM8D58XKXbnn87sCP_sJfUiOOuME_C6YQJbogcDaSjXa3KiOhOVIJgjBd-cs5l7QguVa6cEkTfjDMJPq-s100qrZFFmED2Ctf6Xi4vWV2mgGTN32D3hJBskkgUFo-SQRq8my8ctTMND2E1_1yO85XLBMZQcIdoCvCpphHabiNj1joQUcQIPqQ8lnXRiRu8Cf1gUP1rNwXzWpL1RX76j1w"/>
+</div>
+</div>
+</header>
+<!-- Main Content -->
+<main class="flex-1 mt-20 p-8 grid grid-cols-12 gap-8 h-[calc(100vh-80px)] overflow-hidden max-w-[1600px] mx-auto w-full">
+<!-- Left Column: Summary (~45%) -->
+<section class="col-span-12 lg:col-span-5 flex flex-col gap-6 h-full overflow-y-auto pr-2 pb-10">
+<header class="mb-2">
+<h1 class="text-3xl font-bold tracking-tight">Tu Día Nutricional</h1>
+<p class="text-slate-400 mt-1">Hoy, 24 de Octubre</p>
+</header>
+<!-- Main Calorie Card -->
+<div class="glass-panel rounded-3xl p-8 flex flex-col items-center justify-center relative shadow-2xl shadow-black/20">
+<div class="absolute top-6 right-6">
+<button class="p-2 rounded-full hover:bg-white/5 text-slate-400 hover:text-white transition-colors">
+<span class="material-icons-round">more_horiz</span>
+</button>
+</div>
+<!-- Circular Chart -->
+<div class="relative w-64 h-64 mb-8">
+<!-- Background Circle -->
+<svg class="w-full h-full transform -rotate-90">
+<circle class="text-white/5" cx="128" cy="128" fill="transparent" r="110" stroke="currentColor" stroke-width="24"></circle>
+<!-- Progress Circle (Approx 77% of 2400) -->
+<circle cx="128" cy="128" fill="transparent" r="110" stroke="url(#gradient)" stroke-dasharray="691" stroke-dashoffset="158" stroke-linecap="round" stroke-width="24"></circle>
+<!-- Gradient Definition -->
+<defs>
+<lineargradient id="gradient" x1="0%" x2="100%" y1="0%" y2="0%">
+<stop offset="0%" stop-color="#FCD34D"></stop> <!-- Gold -->
+<stop offset="100%" stop-color="#11d473"></stop> <!-- Primary Emerald -->
+</lineargradient>
+</defs>
+</svg>
+<!-- Center Text -->
+<div class="absolute inset-0 flex flex-col items-center justify-center">
+<span class="text-5xl font-extrabold text-white tracking-tight">1,850</span>
+<span class="text-sm font-medium text-slate-400 mt-1">de 2,400 kcal</span>
+<div class="mt-3 px-3 py-1 rounded-full bg-primary/10 border border-primary/20">
+<span class="text-xs font-bold text-primary tracking-wide uppercase">Déficit</span>
+</div>
+</div>
+</div>
+<!-- Macros -->
+<div class="w-full space-y-6">
+<!-- Protein -->
+<div class="space-y-2">
+<div class="flex justify-between text-sm font-semibold">
+<span class="text-white">Proteína</span>
+<span class="text-primary">140g <span class="text-slate-500 font-normal">/ 180g</span></span>
+</div>
+<div class="h-3 w-full bg-white/5 rounded-full overflow-hidden">
+<div class="h-full bg-primary rounded-full shadow-[0_0_10px_rgba(17,212,115,0.5)]" style="width: 77%"></div>
+</div>
+</div>
+<!-- Carbs -->
+<div class="space-y-2">
+<div class="flex justify-between text-sm font-semibold">
+<span class="text-white">Carbohidratos</span>
+<span class="text-accent-gold">200g <span class="text-slate-500 font-normal">/ 250g</span></span>
+</div>
+<div class="h-3 w-full bg-white/5 rounded-full overflow-hidden">
+<div class="h-full bg-accent-gold rounded-full shadow-[0_0_10px_rgba(252,211,77,0.5)]" style="width: 80%"></div>
+</div>
+</div>
+<!-- Fats -->
+<div class="space-y-2">
+<div class="flex justify-between text-sm font-semibold">
+<span class="text-white">Grasas</span>
+<span class="text-accent-blue">45g <span class="text-slate-500 font-normal">/ 60g</span></span>
+</div>
+<div class="h-3 w-full bg-white/5 rounded-full overflow-hidden">
+<div class="h-full bg-accent-blue rounded-full shadow-[0_0_10px_rgba(59,130,246,0.5)]" style="width: 75%"></div>
+</div>
+</div>
+</div>
+</div>
+<!-- Remaining Macros Pill -->
+<div class="glass-panel rounded-2xl p-6 flex justify-between items-center shadow-lg">
+<div class="flex items-center gap-4">
+<div class="w-12 h-12 rounded-full bg-white/5 flex items-center justify-center border border-white/10">
+<span class="material-icons-round text-white">bolt</span>
+</div>
+<div>
+<h3 class="text-white font-bold">Restante</h3>
+<p class="text-xs text-slate-400">Objetivo Diario</p>
+</div>
+</div>
+<div class="text-right">
+<span class="text-2xl font-bold text-white block">550</span>
+<span class="text-xs text-slate-400">kcal disponibles</span>
+</div>
+</div>
+<!-- Hydration Mini-Widget (Bonus for completeness) -->
+<div class="glass-panel rounded-2xl p-6 flex flex-row items-center gap-6">
+<div class="bg-blue-500/20 p-3 rounded-full text-blue-400">
+<span class="material-icons-round">water_drop</span>
+</div>
+<div class="flex-1">
+<div class="flex justify-between items-end mb-2">
+<h3 class="font-bold text-white">Hidratación</h3>
+<span class="text-sm text-blue-400 font-medium">1.5L / 3L</span>
+</div>
+<div class="h-2 w-full bg-white/5 rounded-full overflow-hidden">
+<div class="h-full bg-blue-500 rounded-full" style="width: 50%"></div>
+</div>
+</div>
+<button class="w-10 h-10 rounded-full border border-blue-500/30 flex items-center justify-center text-blue-400 hover:bg-blue-500 hover:text-white transition-all">
+<span class="material-icons-round text-lg">add</span>
+</button>
+</div>
+</section>
+<!-- Right Column: Meal Feed (~55%) -->
+<section class="col-span-12 lg:col-span-7 flex flex-col h-full overflow-hidden">
+<header class="mb-6 flex justify-between items-end">
+<div>
+<h2 class="text-2xl font-bold tracking-tight">Comidas del Día</h2>
+<p class="text-slate-400 text-sm mt-1">6 registradas, 2 pendientes</p>
+</div>
+<button class="flex items-center gap-2 px-4 py-2 rounded-lg bg-primary text-background-dark font-bold text-sm hover:bg-primary-dark transition-colors shadow-lg shadow-primary/25">
+<span class="material-icons-round text-lg">add</span>
+                    Nueva Comida
+                </button>
+</header>
+<div class="flex-1 overflow-y-auto pr-2 space-y-4 pb-12 custom-scrollbar">
+<!-- Completed Card: Breakfast -->
+<div class="glass-card rounded-2xl p-5 flex items-center justify-between group">
+<div class="flex items-center gap-5">
+<div class="relative w-20 h-20 rounded-xl overflow-hidden shrink-0">
+<img class="w-full h-full object-cover" data-alt="Oatmeal bowl with berries" src="https://lh3.googleusercontent.com/aida-public/AB6AXuByLmOcuuTvzOxOkdzq845VqmIdiW7J4lsILIDYm1zBi-AXBUZxDJelAq9JnXHXqtJVX2zI0Bj6Fd8Jb7L-f8Lye6jkzimOH7DVwsQx-kVcUiEwCftskDsKSv2xwQW_YQpDnNSDaVuMccxVPueegBz_fdn-jlCop6oJkXKB1KpK0v3QXNhG2z_alPapZl1SeY_uaDbG8n-NErvVvntk7T6DOqeX2mKrlgIz8B5SP4YVTrpgMeJjOPJHKSEf9PngFlscvxusvHvcDg"/>
+<div class="absolute inset-0 bg-black/20 group-hover:bg-transparent transition-all"></div>
+</div>
+<div>
+<div class="flex items-center gap-3 mb-1">
+<span class="text-xs font-bold text-primary uppercase tracking-wide">Desayuno</span>
+<span class="text-xs text-slate-500">• 08:30 AM</span>
+</div>
+<h3 class="text-lg font-bold text-white mb-2">Avena con Proteína &amp; Arándanos</h3>
+<div class="flex items-center gap-3">
+<span class="px-2 py-1 rounded bg-white/5 text-xs text-slate-300 font-medium">35g Prot</span>
+<span class="px-2 py-1 rounded bg-white/5 text-xs text-slate-300 font-medium">55g Carb</span>
+<span class="px-2 py-1 rounded bg-white/5 text-xs text-slate-300 font-medium">10g Grasas</span>
+</div>
+</div>
+</div>
+<div class="text-right pl-4 border-l border-white/10 ml-4">
+<span class="block text-xl font-bold text-white">450</span>
+<span class="text-xs text-slate-400">kcal</span>
+</div>
+</div>
+<!-- Completed Card: Lunch -->
+<div class="glass-card rounded-2xl p-5 flex items-center justify-between group">
+<div class="flex items-center gap-5">
+<div class="relative w-20 h-20 rounded-xl overflow-hidden shrink-0">
+<img class="w-full h-full object-cover" data-alt="Grilled chicken with salad" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCk4snJG8SXGUQZ9NV1-cQiddh84Ejg_rfqKRMne174MtPH2danuq8-pusl0QST2i6_yZUuvEtl3hC8Pwm62uO6gyNO6lNa8RBSP8WwCL-B73hctopQreXT0zq0d54rpTcTPyPhdv0pf4ZpssAl1iB5zoyno85AXiAK-8zu86AcDgU7Jih8f9nXQLeF_tla7kQrxGxYss0bJxDWzI3_wvgSHMSobHoJdXKxtrcflZanxerp30yAEtkmGKDbHMmsJrJYzDHoEz0uVA"/>
+</div>
+<div>
+<div class="flex items-center gap-3 mb-1">
+<span class="text-xs font-bold text-primary uppercase tracking-wide">Almuerzo</span>
+<span class="text-xs text-slate-500">• 13:00 PM</span>
+</div>
+<h3 class="text-lg font-bold text-white mb-2">Pollo a la plancha con Arroz</h3>
+<div class="flex items-center gap-3">
+<span class="px-2 py-1 rounded bg-white/5 text-xs text-slate-300 font-medium">50g Prot</span>
+<span class="px-2 py-1 rounded bg-white/5 text-xs text-slate-300 font-medium">60g Carb</span>
+<span class="px-2 py-1 rounded bg-white/5 text-xs text-slate-300 font-medium">15g Grasas</span>
+</div>
+</div>
+</div>
+<div class="text-right pl-4 border-l border-white/10 ml-4">
+<span class="block text-xl font-bold text-white">600</span>
+<span class="text-xs text-slate-400">kcal</span>
+</div>
+</div>
+<!-- Completed Card: Snack -->
+<div class="glass-card rounded-2xl p-5 flex items-center justify-between group">
+<div class="flex items-center gap-5">
+<div class="relative w-20 h-20 rounded-xl overflow-hidden shrink-0">
+<img class="w-full h-full object-cover" data-alt="Greek yogurt bowl" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDLRzghcFzaWFlpiFOEia_fbLf8Yc4ACNBzIl3lEp7GLa5vYJ08xvUyQZpiaRWzZ4a6sE5KiMauVc8V0hSI5U9KZJipzmpGt_9_YZVpiRybqlx9xkg7VbuyTy8S4_-UcLpBXfnCHPUSJnxvH-Ixw5sPIlAh9RLpjySNisyKykBPIOUcwz1jiwUM5ZJ9MZXQt3EqP3mF4KD2c7hpwtREpCcwRISCtZuG5IJHIn5sIJj_pfzsbRUtLErKwZP7-dTNb0WK6qcwLNZT4A"/>
+</div>
+<div>
+<div class="flex items-center gap-3 mb-1">
+<span class="text-xs font-bold text-primary uppercase tracking-wide">Merienda</span>
+<span class="text-xs text-slate-500">• 16:30 PM</span>
+</div>
+<h3 class="text-lg font-bold text-white mb-2">Yogurt Griego</h3>
+<div class="flex items-center gap-3">
+<span class="px-2 py-1 rounded bg-white/5 text-xs text-slate-300 font-medium">15g Prot</span>
+<span class="px-2 py-1 rounded bg-white/5 text-xs text-slate-300 font-medium">8g Carb</span>
+<span class="px-2 py-1 rounded bg-white/5 text-xs text-slate-300 font-medium">0g Grasas</span>
+</div>
+</div>
+</div>
+<div class="text-right pl-4 border-l border-white/10 ml-4">
+<span class="block text-xl font-bold text-white">150</span>
+<span class="text-xs text-slate-400">kcal</span>
+</div>
+</div>
+<!-- Completed Card: Pre-Workout -->
+<div class="glass-card rounded-2xl p-5 flex items-center justify-between group">
+<div class="flex items-center gap-5">
+<div class="relative w-20 h-20 rounded-xl overflow-hidden shrink-0">
+<img class="w-full h-full object-cover" data-alt="Banana and black coffee" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBl3YqOGjFm5thvlnCtCBJy8t7kpZyZy7yr5ge3rgq724KtXlq4twPxASyZXx9zzSnY5X6roeVpW9Ga60HCiqc07Xf0vzVAYcJa510wc1b6vmZFe11zZ6qt-KcPiMZSKEkNZatYqqiMIuDHK5SoJRiXby1slgAsHN0M014YBhlKo3Xj56d8IkJgeW135mG61Ik6-T_ThHP96BIgwcGl_x21_tWFtMvg9BRQT-Y01n4_r-jgYIYFOibM5R1UhWwHGj5JwNtL5Da2sA"/>
+</div>
+<div>
+<div class="flex items-center gap-3 mb-1">
+<span class="text-xs font-bold text-primary uppercase tracking-wide">Pre-Workout</span>
+<span class="text-xs text-slate-500">• 18:00 PM</span>
+</div>
+<h3 class="text-lg font-bold text-white mb-2">Banana &amp; Café</h3>
+<div class="flex items-center gap-3">
+<span class="px-2 py-1 rounded bg-white/5 text-xs text-slate-300 font-medium">1g Prot</span>
+<span class="px-2 py-1 rounded bg-white/5 text-xs text-slate-300 font-medium">27g Carb</span>
+<span class="px-2 py-1 rounded bg-white/5 text-xs text-slate-300 font-medium">0g Grasas</span>
+</div>
+</div>
+</div>
+<div class="text-right pl-4 border-l border-white/10 ml-4">
+<span class="block text-xl font-bold text-white">120</span>
+<span class="text-xs text-slate-400">kcal</span>
+</div>
+</div>
+<!-- Empty State: Dinner -->
+<div class="dashed-card rounded-2xl p-5 flex items-center justify-between group">
+<div class="flex items-center gap-5 opacity-60 group-hover:opacity-100 transition-opacity">
+<div class="w-20 h-20 rounded-xl bg-white/5 flex items-center justify-center border border-white/5 group-hover:border-primary/30 transition-colors">
+<span class="material-icons-round text-3xl text-slate-400 group-hover:text-primary">dinner_dining</span>
+</div>
+<div>
+<div class="flex items-center gap-3 mb-1">
+<span class="text-xs font-bold text-slate-500 uppercase tracking-wide">Cena</span>
+</div>
+<h3 class="text-lg font-semibold text-slate-300 group-hover:text-white transition-colors">Agregar Cena</h3>
+<p class="text-sm text-slate-500">Recomendado: 400-500 kcal</p>
+</div>
+</div>
+<button class="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center text-slate-400 hover:bg-primary hover:text-background-dark transition-all">
+<span class="material-icons-round">add</span>
+</button>
+</div>
+<!-- Empty State: Post-Workout -->
+<div class="dashed-card rounded-2xl p-5 flex items-center justify-between group">
+<div class="flex items-center gap-5 opacity-60 group-hover:opacity-100 transition-opacity">
+<div class="w-20 h-20 rounded-xl bg-white/5 flex items-center justify-center border border-white/5 group-hover:border-primary/30 transition-colors">
+<span class="material-icons-round text-3xl text-slate-400 group-hover:text-primary">blender</span>
+</div>
+<div>
+<div class="flex items-center gap-3 mb-1">
+<span class="text-xs font-bold text-slate-500 uppercase tracking-wide">Post-Workout</span>
+</div>
+<h3 class="text-lg font-semibold text-slate-300 group-hover:text-white transition-colors">Agregar Batido</h3>
+<p class="text-sm text-slate-500">Recomendado: 30g Proteína</p>
+</div>
+</div>
+<button class="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center text-slate-400 hover:bg-primary hover:text-background-dark transition-all">
+<span class="material-icons-round">add</span>
+</button>
+</div>
+</div>
+</section>
+</main>
+</body></html>

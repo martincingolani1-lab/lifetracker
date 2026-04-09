@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="es"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>LifeTracker Nutrition Dashboard</title>
+<!-- Google Fonts -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Epilogue:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<!-- Material Icons -->
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Theme Config -->
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#13ec92",
+                        "background-light": "#f6f8f7",
+                        "background-dark": "#0F2E2E", // Moody teal requested
+                        "card-dark": "rgba(255, 255, 255, 0.03)",
+                        "accent-yellow": "#FFD700",
+                        "accent-blue": "#4aa9ff",
+                    },
+                    fontFamily: {
+                        "display": ["Epilogue", "sans-serif"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "1rem", 
+                        "lg": "2rem", 
+                        "xl": "3rem", 
+                        "full": "9999px"
+                    },
+                    boxShadow: {
+                        'glow': '0 0 20px -5px rgba(19, 236, 146, 0.3)',
+                        'glow-yellow': '0 0 15px -5px rgba(255, 215, 0, 0.3)',
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        body {
+            font-family: 'Epilogue', sans-serif;
+            /* Force dark mode background as requested */
+            background-color: #0F2E2E; 
+        }
+        
+        /* Custom Scrollbar for clean look */
+        ::-webkit-scrollbar {
+            width: 0px;
+            background: transparent;
+        }
+
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .glass-dashed {
+            background: rgba(255, 255, 255, 0.01);
+            backdrop-filter: blur(4px);
+            -webkit-backdrop-filter: blur(4px);
+            border: 2px dashed rgba(255, 255, 255, 0.1);
+        }
+
+        .gradient-ring {
+            background: conic-gradient(
+                #FFD700 0%,
+                #13ec92 75%, 
+                rgba(255,255,255,0.05) 75%
+            );
+            border-radius: 50%;
+        }
+
+        /* Inner shadow for the ring cutout */
+        .ring-inner {
+            background-color: #0F2E2E;
+            box-shadow: inset 0 0 20px rgba(0,0,0,0.5);
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-dark min-h-screen text-white pb-24 overflow-x-hidden antialiased selection:bg-primary selection:text-background-dark">
+<!-- Header Section -->
+<header class="pt-8 px-6 pb-4">
+<div class="flex justify-between items-center mb-6">
+<h1 class="text-2xl font-bold tracking-tight flex items-center gap-2">
+<span>🥗</span> Tu Día Nutricional
+            </h1>
+<button class="p-2 rounded-full bg-white/5 hover:bg-white/10 transition">
+<span class="material-icons-round text-white/70">settings</span>
+</button>
+</div>
+<!-- Toggle Switch -->
+<div class="bg-black/20 p-1.5 rounded-full flex relative w-full max-w-xs mx-auto">
+<button class="flex-1 py-2.5 px-6 rounded-full bg-primary text-background-dark font-bold text-sm shadow-glow transition-all">
+                Diario
+            </button>
+<button class="flex-1 py-2.5 px-6 rounded-full text-white/50 font-medium text-sm hover:text-white transition-all">
+                Métricas
+            </button>
+</div>
+</header>
+<main class="px-6 space-y-8">
+<!-- Hero: Circular Progress & Macros -->
+<section class="flex flex-col items-center">
+<!-- Circular Progress Ring -->
+<div class="relative w-64 h-64 mb-8 flex items-center justify-center">
+<!-- Outer Glow -->
+<div class="absolute inset-0 bg-primary/20 blur-3xl rounded-full opacity-20"></div>
+<!-- Conic Gradient Ring -->
+<div class="gradient-ring w-full h-full p-[2px] rounded-full relative transform -rotate-90">
+<!-- Cutout for ring thickness -->
+<div class="absolute inset-[16px] ring-inner rounded-full flex flex-col items-center justify-center transform rotate-90 z-10">
+<span class="text-white/40 text-sm font-medium mb-1">Consumidas</span>
+<div class="text-5xl font-extrabold tracking-tight text-white mb-1">
+                            1,850
+                        </div>
+<div class="text-white/50 text-sm font-medium">
+                            / 2,400 kcal
+                        </div>
+</div>
+</div>
+</div>
+<!-- Macro Bars -->
+<div class="w-full space-y-5">
+<!-- Protein -->
+<div class="space-y-2">
+<div class="flex justify-between items-end text-sm">
+<div class="flex items-center gap-2 font-medium text-emerald-400">
+<span class="material-icons-round text-base">restaurant</span>
+                            Proteínas
+                        </div>
+<div class="text-white/80 font-semibold">120g <span class="text-white/30 text-xs font-normal">/ 160g</span></div>
+</div>
+<div class="h-3 w-full bg-white/5 rounded-full overflow-hidden">
+<div class="h-full bg-emerald-400 rounded-full shadow-[0_0_10px_rgba(52,211,153,0.5)]" style="width: 75%"></div>
+</div>
+</div>
+<!-- Carbs -->
+<div class="space-y-2">
+<div class="flex justify-between items-end text-sm">
+<div class="flex items-center gap-2 font-medium text-accent-yellow">
+<span class="material-icons-round text-base">bakery_dining</span>
+                            Carbohidratos
+                        </div>
+<div class="text-white/80 font-semibold">200g <span class="text-white/30 text-xs font-normal">/ 280g</span></div>
+</div>
+<div class="h-3 w-full bg-white/5 rounded-full overflow-hidden">
+<div class="h-full bg-accent-yellow rounded-full shadow-glow-yellow" style="width: 71%"></div>
+</div>
+</div>
+<!-- Fats -->
+<div class="space-y-2">
+<div class="flex justify-between items-end text-sm">
+<div class="flex items-center gap-2 font-medium text-accent-blue">
+<span class="material-icons-round text-base">opacity</span>
+                            Grasas
+                        </div>
+<div class="text-white/80 font-semibold">60g <span class="text-white/30 text-xs font-normal">/ 80g</span></div>
+</div>
+<div class="h-3 w-full bg-white/5 rounded-full overflow-hidden">
+<div class="h-full bg-accent-blue rounded-full shadow-[0_0_10px_rgba(74,169,255,0.4)]" style="width: 75%"></div>
+</div>
+</div>
+</div>
+</section>
+<!-- Meal Timeline -->
+<section class="space-y-4 pt-4">
+<h2 class="text-lg font-bold text-white mb-4 px-1">Comidas de Hoy</h2>
+<!-- Card: Desayuno -->
+<div class="glass-panel p-5 rounded-[24px] flex items-center gap-4 group hover:bg-white/5 transition-colors cursor-pointer">
+<div class="w-16 h-16 rounded-2xl overflow-hidden shrink-0 relative bg-white/5">
+<img alt="Oatmeal bowl with berries" class="w-full h-full object-cover opacity-90 group-hover:scale-110 transition-transform duration-500" data-alt="Oatmeal bowl with berries" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBd36hK1bFRdoS9Hp_z7xU_jaMTwpLBCsY-xn2Pi3BWdmPJ0GYAtT-YwQL2JqsyxuOqjr0jq4eCZ1XZ_T1OaWkCElehwMQssFshGSegaSImChekNMwxMbHLjQL5lOdcqqikrPhRV2gfLY_mHDezsHgM21m2ERYh9f_oiuCusUPDg68nR-YKsVardRG70vplLt0PxIGk8AjbzYclwEFA0o6XaigNpGtGqVzlQvu8GneG6uUJCDxu6vTJ1Ko0Yy2K3Z279XDGD7SE1g"/>
+</div>
+<div class="flex-1 min-w-0">
+<div class="flex justify-between items-start mb-1">
+<h3 class="font-bold text-white text-lg truncate">Desayuno</h3>
+<span class="text-primary font-bold text-sm bg-primary/10 px-2 py-0.5 rounded-lg border border-primary/20">450 kcal</span>
+</div>
+<p class="text-white/60 text-sm mb-2 truncate">Avena con frutas y nueces</p>
+<div class="flex gap-3 text-xs text-white/40 font-medium">
+<span class="flex items-center gap-1"><div class="w-1.5 h-1.5 rounded-full bg-emerald-400"></div> 20g P</span>
+<span class="flex items-center gap-1"><div class="w-1.5 h-1.5 rounded-full bg-accent-yellow"></div> 60g C</span>
+<span class="flex items-center gap-1"><div class="w-1.5 h-1.5 rounded-full bg-accent-blue"></div> 12g G</span>
+</div>
+</div>
+<div class="shrink-0 text-primary">
+<span class="material-icons-round text-2xl">check_circle</span>
+</div>
+</div>
+<!-- Card: Almuerzo -->
+<div class="glass-panel p-5 rounded-[24px] flex items-center gap-4 group hover:bg-white/5 transition-colors cursor-pointer">
+<div class="w-16 h-16 rounded-2xl overflow-hidden shrink-0 relative bg-white/5">
+<img alt="Chicken breast with white rice" class="w-full h-full object-cover opacity-90 group-hover:scale-110 transition-transform duration-500" data-alt="Chicken breast with white rice" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBQYAjXDdHS8ZheKldyyLuK7MT2kDdD1_YOQMvsqPixfq9Uyz9PAxwwDCS0gh5Eqzzjj15OAAEwNuffr9wfkNXi5CTf7Vg0qcXsx-zvC1ywpApKFCwnk05Aae9A5tU8wTm6YGqIf4PAMcWsQuT0sMoZ-HbpKO1pIjdLH2mvEkXqxSMyAJOipktVuspFjF8WUkrHkOBHAR2ZILXE_SzdpZNmkLFJxHFBOzACOSX2FuogKfQoOjhiLrZlbLIp4sUdoMLSvqI_Dyr3EA"/>
+</div>
+<div class="flex-1 min-w-0">
+<div class="flex justify-between items-start mb-1">
+<h3 class="font-bold text-white text-lg truncate">Almuerzo</h3>
+<span class="text-primary font-bold text-sm bg-primary/10 px-2 py-0.5 rounded-lg border border-primary/20">650 kcal</span>
+</div>
+<p class="text-white/60 text-sm mb-2 truncate">Pollo con arroz y vegetales</p>
+<div class="flex gap-3 text-xs text-white/40 font-medium">
+<span class="flex items-center gap-1"><div class="w-1.5 h-1.5 rounded-full bg-emerald-400"></div> 45g P</span>
+<span class="flex items-center gap-1"><div class="w-1.5 h-1.5 rounded-full bg-accent-yellow"></div> 80g C</span>
+<span class="flex items-center gap-1"><div class="w-1.5 h-1.5 rounded-full bg-accent-blue"></div> 15g G</span>
+</div>
+</div>
+<div class="shrink-0 text-primary">
+<span class="material-icons-round text-2xl">check_circle</span>
+</div>
+</div>
+<!-- Card: Merienda -->
+<div class="glass-panel p-5 rounded-[24px] flex items-center gap-4 group hover:bg-white/5 transition-colors cursor-pointer">
+<div class="w-16 h-16 rounded-2xl overflow-hidden shrink-0 relative bg-white/5">
+<img alt="Yogurt bowl" class="w-full h-full object-cover opacity-90 group-hover:scale-110 transition-transform duration-500" data-alt="Yogurt bowl" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAScxdNNjxNebhtX4HqSQP3PyUAf4jFqKIr87C1kJVTQPVa_ZvFugAqnIb3cv9fDKmG_0YiRPiMwSBF_BaETwIxveFE1rh3wUfgq5I5O1uy22zkaqmbc0hm5n5mAizDYlb-bi1AnYXyTj6RDMtxDBiT5jT52t9K9HwoL1aWctY7Llv_b1_X9Ye5T25KmeyIYRLLwKDviYplgNwbmA7_FioIncKiMItrQjnXBibrvUqvruTIkEdmIPFyWXxqPDMEysUoSp_pttpEvA"/>
+</div>
+<div class="flex-1 min-w-0">
+<div class="flex justify-between items-start mb-1">
+<h3 class="font-bold text-white text-lg truncate">Merienda</h3>
+<span class="text-primary font-bold text-sm bg-primary/10 px-2 py-0.5 rounded-lg border border-primary/20">300 kcal</span>
+</div>
+<p class="text-white/60 text-sm mb-2 truncate">Yogurt Griego</p>
+<div class="flex gap-3 text-xs text-white/40 font-medium">
+<span class="flex items-center gap-1"><div class="w-1.5 h-1.5 rounded-full bg-emerald-400"></div> 15g P</span>
+<span class="flex items-center gap-1"><div class="w-1.5 h-1.5 rounded-full bg-accent-yellow"></div> 20g C</span>
+<span class="flex items-center gap-1"><div class="w-1.5 h-1.5 rounded-full bg-accent-blue"></div> 5g G</span>
+</div>
+</div>
+<div class="shrink-0 text-primary">
+<span class="material-icons-round text-2xl">check_circle</span>
+</div>
+</div>
+<!-- Card: Pre-Workout -->
+<div class="glass-panel p-5 rounded-[24px] flex items-center gap-4 group hover:bg-white/5 transition-colors cursor-pointer">
+<div class="w-16 h-16 rounded-2xl overflow-hidden shrink-0 relative bg-white/5">
+<img alt="Protein shake smoothie" class="w-full h-full object-cover opacity-90 group-hover:scale-110 transition-transform duration-500" data-alt="Protein shake smoothie" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBEJG7BbZQVcF5yvkWgids_Qg558OBvzjLdXishHcMXQ2oAUku9THs6h2cbLDkztOalvsvWQlVsmfBlVtnhGxKCiW2ipM0B4mDkQH7l6bnpLm5HOon2JwWMiavEexrqeJUz1ShiIKBic_-8jYgtsii8aUMHdrJfJtZxXs2h1uGeOh9qTrtzQNPp9PP-vxn8_y3AMG1-3wqYXP3k8SxjN4XPEQVCzFaKHnxrGhTxcXVdkX_Z1Rz5Kjj-Ll3Ih9UVVY180QFXg8Xqjg"/>
+</div>
+<div class="flex-1 min-w-0">
+<div class="flex justify-between items-start mb-1">
+<h3 class="font-bold text-white text-lg truncate">Pre-Workout</h3>
+<span class="text-primary font-bold text-sm bg-primary/10 px-2 py-0.5 rounded-lg border border-primary/20">250 kcal</span>
+</div>
+<p class="text-white/60 text-sm mb-2 truncate">Batido de Plátano</p>
+<div class="flex gap-3 text-xs text-white/40 font-medium">
+<span class="flex items-center gap-1"><div class="w-1.5 h-1.5 rounded-full bg-emerald-400"></div> 20g P</span>
+<span class="flex items-center gap-1"><div class="w-1.5 h-1.5 rounded-full bg-accent-yellow"></div> 40g C</span>
+<span class="flex items-center gap-1"><div class="w-1.5 h-1.5 rounded-full bg-accent-blue"></div> 2g G</span>
+</div>
+</div>
+<div class="shrink-0 text-primary">
+<span class="material-icons-round text-2xl">check_circle</span>
+</div>
+</div>
+<!-- Card: Cena (Empty State) -->
+<div class="glass-dashed p-5 rounded-[24px] flex items-center gap-4 group hover:bg-white/5 transition-colors cursor-pointer">
+<div class="w-16 h-16 rounded-2xl flex items-center justify-center bg-white/5 text-white/20 group-hover:text-primary transition-colors">
+<span class="material-icons-round text-3xl">add</span>
+</div>
+<div class="flex-1">
+<h3 class="font-bold text-white/50 group-hover:text-white transition-colors text-lg">Cena</h3>
+<p class="text-white/30 text-sm">Sin registrar</p>
+</div>
+<button class="px-4 py-2 rounded-full bg-white/5 hover:bg-primary hover:text-background-dark text-white/60 text-sm font-semibold transition-all">
+                    + Agregar
+                </button>
+</div>
+<!-- Card: Post-Workout (Empty State) -->
+<div class="glass-dashed p-5 rounded-[24px] flex items-center gap-4 group hover:bg-white/5 transition-colors cursor-pointer mb-20">
+<div class="w-16 h-16 rounded-2xl flex items-center justify-center bg-white/5 text-white/20 group-hover:text-primary transition-colors">
+<span class="material-icons-round text-3xl">add</span>
+</div>
+<div class="flex-1">
+<h3 class="font-bold text-white/50 group-hover:text-white transition-colors text-lg">Post-Workout</h3>
+<p class="text-white/30 text-sm">Sin registrar</p>
+</div>
+<button class="px-4 py-2 rounded-full bg-white/5 hover:bg-primary hover:text-background-dark text-white/60 text-sm font-semibold transition-all">
+                    + Agregar
+                </button>
+</div>
+</section>
+</main>
+<!-- Sticky Bottom Summary -->
+<div class="fixed bottom-6 left-6 right-6 z-50">
+<div class="glass-panel bg-background-dark/80 backdrop-blur-xl rounded-full p-1 pl-6 pr-2 shadow-2xl border-white/10 flex items-center justify-between h-16">
+<div class="flex flex-col justify-center">
+<span class="text-[10px] uppercase tracking-wider text-white/50 font-bold mb-0.5">Restante</span>
+<div class="flex items-center gap-3 text-sm font-medium text-white/90">
+<span class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-emerald-400"></span> P: 40g</span>
+<span class="w-[1px] h-3 bg-white/20"></span>
+<span class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-accent-yellow"></span> C: 80g</span>
+<span class="w-[1px] h-3 bg-white/20"></span>
+<span class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-accent-blue"></span> G: 20g</span>
+</div>
+</div>
+<div class="h-12 px-5 bg-white text-background-dark rounded-full flex items-center justify-center font-bold shadow-lg">
+                550 kcal
+            </div>
+</div>
+</div>
+</body></html>

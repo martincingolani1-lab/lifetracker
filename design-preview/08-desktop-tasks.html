@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="es"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>LifeTracker Desktop Task Manager</title>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#f4c025",
+                        "background-light": "#f8f8f5",
+                        "background-dark": "#221e10",
+                        "teal-dark": "#0F2E2E",
+                        "teal-surface": "#1A3D3D",
+                        "glass-surface": "rgba(255, 255, 255, 0.05)",
+                        "glass-border": "rgba(255, 255, 255, 0.08)",
+                    },
+                    fontFamily: {
+                        "display": ["Inter", "sans-serif"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "1rem",
+                        "lg": "2rem",
+                        "xl": "3rem",
+                        "full": "9999px"
+                    },
+                    boxShadow: {
+                        'glass': '0 8px 32px 0 rgba(0, 0, 0, 0.37)',
+                        'glow': '0 0 15px rgba(244, 192, 37, 0.3)',
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        /* Glassmorphism utilities */
+        .glass-panel {
+            background: linear-gradient(145deg, rgba(255, 255, 255, 0.07) 0%, rgba(255, 255, 255, 0.02) 100%);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+        
+        .glass-header {
+            background: rgba(15, 46, 46, 0.8);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        /* Custom scrollbar for dark theme */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+        
+        /* Checkbox customization */
+        .custom-checkbox:checked {
+            background-color: #f4c025;
+            border-color: #f4c025;
+            background-image: url("data:image/svg+xml,%3csvg viewBox='0 0 16 16' fill='black' xmlns='http://www.w3.org/2000/svg'%3e%3cpath d='M12.207 4.793a1 1 0 010 1.414l-5 5a1 1 0 01-1.414 0l-2-2a1 1 0 011.414-1.414L6.5 9.086l4.293-4.293a1 1 0 011.414 0z'/%3e%3c/svg%3e");
+        }
+    </style>
+</head>
+<body class="bg-teal-dark font-display text-white min-h-screen overflow-x-hidden selection:bg-primary selection:text-teal-dark">
+<!-- Fixed Glass Header -->
+<header class="glass-header fixed top-0 w-full z-50 h-20 flex items-center justify-between px-8 lg:px-12">
+<div class="flex items-center gap-12">
+<!-- Logo -->
+<div class="flex items-center gap-3 group cursor-pointer">
+<div class="w-10 h-10 rounded-xl bg-gradient-to-br from-primary to-yellow-600 flex items-center justify-center shadow-glow group-hover:scale-105 transition-transform duration-300">
+<span class="material-icons text-teal-dark font-bold">check_circle</span>
+</div>
+<h1 class="text-xl font-bold tracking-wide">LifeTracker</h1>
+</div>
+<!-- Navigation -->
+<nav class="hidden md:flex items-center gap-1">
+<a class="px-5 py-2.5 rounded-full text-sm font-medium text-white/60 hover:text-white hover:bg-white/5 transition-all" href="#">Dashboard</a>
+<a class="px-5 py-2.5 rounded-full text-sm font-bold text-teal-dark bg-primary shadow-glow transition-all" href="#">Tareas</a>
+<a class="px-5 py-2.5 rounded-full text-sm font-medium text-white/60 hover:text-white hover:bg-white/5 transition-all" href="#">Calendario</a>
+<a class="px-5 py-2.5 rounded-full text-sm font-medium text-white/60 hover:text-white hover:bg-white/5 transition-all" href="#">Ajustes</a>
+</nav>
+</div>
+<!-- User Profile -->
+<div class="flex items-center gap-4">
+<button class="w-10 h-10 rounded-full flex items-center justify-center text-white/60 hover:text-primary hover:bg-white/5 transition-colors">
+<span class="material-icons">notifications</span>
+</button>
+<div class="flex items-center gap-3 pl-4 border-l border-white/10">
+<div class="text-right hidden sm:block">
+<p class="text-sm font-semibold">Alex Morgan</p>
+<p class="text-xs text-white/50">Plan Premium</p>
+</div>
+<div class="relative">
+<img alt="User Avatar" class="w-10 h-10 rounded-full object-cover border-2 border-white/10" data-alt="Profile picture of a smiling man" src="https://lh3.googleusercontent.com/aida-public/AB6AXuA4RB844r6DxqLsL521u6omBY7E2OtkP7QOGQTxsZ9HHkNDs26SxA7Dl6pYliZWbaMyOxXEfwT4fZSbt7LbPRxbHQ6M7ttV_MQlNapud-Vct-WUnXEhMCGI2vtLzrEi7GFAnUmZzFBjcKDzDQnkbNApKo9zeyVPrqqVtOdEvoPWYNeN39aYdvO6_h_jFqN0o29s882cmX0S8kC2KMz53dxKdhIWzoqIir3tsB6ycp6hdUMzPUF4qCFE5e6TWjLK6Ag5qQE4IdqVfg"/>
+<div class="absolute bottom-0 right-0 w-3 h-3 bg-green-500 rounded-full border-2 border-teal-dark"></div>
+</div>
+</div>
+</div>
+</header>
+<!-- Main Content -->
+<main class="pt-28 pb-12 px-8 lg:px-12 max-w-[1600px] mx-auto min-h-screen">
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-8 h-full">
+<!-- Left Column: Overview & Categories -->
+<div class="lg:col-span-5 xl:col-span-4 flex flex-col gap-8">
+<!-- Hero Title -->
+<div class="space-y-2 mt-4">
+<h2 class="text-4xl font-bold leading-tight">Tus Pendientes,<br/><span class="text-primary">Organizados.</span></h2>
+<p class="text-white/40 text-lg font-light">Gestiona tu día con elegancia y precisión.</p>
+</div>
+<!-- Progress Widget -->
+<div class="glass-panel p-8 rounded-lg relative overflow-hidden group">
+<!-- Decorational background glow -->
+<div class="absolute -top-10 -right-10 w-32 h-32 bg-primary/10 rounded-full blur-3xl group-hover:bg-primary/20 transition-all duration-700"></div>
+<div class="flex justify-between items-end mb-4 relative z-10">
+<div>
+<h3 class="text-sm font-medium text-white/60 tracking-wider uppercase mb-1">Progreso del día</h3>
+<div class="text-4xl font-bold text-white">57%</div>
+</div>
+<div class="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center">
+<span class="material-icons text-primary text-xl">trending_up</span>
+</div>
+</div>
+<div class="relative h-3 bg-white/5 rounded-full overflow-hidden">
+<div class="absolute top-0 left-0 h-full w-[57%] bg-gradient-to-r from-yellow-600 to-primary rounded-full shadow-glow"></div>
+</div>
+<p class="text-xs text-white/40 mt-4 text-right">4 de 7 tareas completadas</p>
+</div>
+<!-- Categories Grid -->
+<div>
+<div class="flex items-center justify-between mb-6">
+<h3 class="text-lg font-semibold">Categorías</h3>
+<button class="text-xs text-primary hover:text-white transition-colors">Ver todas</button>
+</div>
+<div class="grid grid-cols-2 gap-4">
+<!-- Category: Personal -->
+<div class="glass-panel p-5 rounded-lg hover:bg-white/5 transition-all cursor-pointer group border-l-4 border-l-blue-500/0 hover:border-l-blue-500">
+<div class="flex justify-between items-start mb-6">
+<div class="w-10 h-10 rounded-full bg-blue-500/20 text-blue-400 flex items-center justify-center group-hover:scale-110 transition-transform">
+<span class="material-icons text-xl">person</span>
+</div>
+<span class="text-xs font-bold bg-white/5 px-2 py-1 rounded text-white/50">4</span>
+</div>
+<h4 class="font-medium text-white group-hover:text-blue-400 transition-colors">Personal</h4>
+<p class="text-xs text-white/40 mt-1">Lista de compras...</p>
+</div>
+<!-- Category: Trabajo -->
+<div class="glass-panel p-5 rounded-lg hover:bg-white/5 transition-all cursor-pointer group border-l-4 border-l-purple-500/0 hover:border-l-purple-500">
+<div class="flex justify-between items-start mb-6">
+<div class="w-10 h-10 rounded-full bg-purple-500/20 text-purple-400 flex items-center justify-center group-hover:scale-110 transition-transform">
+<span class="material-icons text-xl">work</span>
+</div>
+<span class="text-xs font-bold bg-white/5 px-2 py-1 rounded text-white/50">8</span>
+</div>
+<h4 class="font-medium text-white group-hover:text-purple-400 transition-colors">Trabajo</h4>
+<p class="text-xs text-white/40 mt-1">Revisión Q3...</p>
+</div>
+<!-- Category: Compras -->
+<div class="glass-panel p-5 rounded-lg hover:bg-white/5 transition-all cursor-pointer group border-l-4 border-l-green-500/0 hover:border-l-green-500">
+<div class="flex justify-between items-start mb-6">
+<div class="w-10 h-10 rounded-full bg-green-500/20 text-green-400 flex items-center justify-center group-hover:scale-110 transition-transform">
+<span class="material-icons text-xl">shopping_cart</span>
+</div>
+<span class="text-xs font-bold bg-white/5 px-2 py-1 rounded text-white/50">2</span>
+</div>
+<h4 class="font-medium text-white group-hover:text-green-400 transition-colors">Compras</h4>
+<p class="text-xs text-white/40 mt-1">Supermercado...</p>
+</div>
+<!-- Category: Fitness -->
+<div class="glass-panel p-5 rounded-lg hover:bg-white/5 transition-all cursor-pointer group border-l-4 border-l-orange-500/0 hover:border-l-orange-500">
+<div class="flex justify-between items-start mb-6">
+<div class="w-10 h-10 rounded-full bg-orange-500/20 text-orange-400 flex items-center justify-center group-hover:scale-110 transition-transform">
+<span class="material-icons text-xl">fitness_center</span>
+</div>
+<span class="text-xs font-bold bg-white/5 px-2 py-1 rounded text-white/50">1</span>
+</div>
+<h4 class="font-medium text-white group-hover:text-orange-400 transition-colors">Fitness</h4>
+<p class="text-xs text-white/40 mt-1">Rutina pierna...</p>
+</div>
+<!-- Add Category -->
+<button class="col-span-2 border border-dashed border-white/20 rounded-lg p-4 flex items-center justify-center gap-2 text-white/40 hover:text-primary hover:border-primary hover:bg-primary/5 transition-all group h-[120px]">
+<div class="w-8 h-8 rounded-full border border-current flex items-center justify-center group-hover:scale-110 transition-transform">
+<span class="material-icons text-lg">add</span>
+</div>
+<span class="font-medium">Nueva Categoría</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Right Column: Task List -->
+<div class="lg:col-span-7 xl:col-span-8 flex flex-col h-full">
+<div class="glass-panel rounded-lg p-8 flex-grow flex flex-col relative overflow-hidden">
+<!-- Header -->
+<div class="flex items-end justify-between mb-8 border-b border-white/10 pb-6">
+<div>
+<h3 class="text-2xl font-bold mb-1">Tareas de Hoy</h3>
+<p class="text-white/40 text-sm">Martes, 24 de Octubre</p>
+</div>
+<div class="flex gap-2">
+<button class="w-8 h-8 flex items-center justify-center rounded-full bg-white/5 hover:bg-white/10 text-white/60 transition-colors">
+<span class="material-icons text-sm">filter_list</span>
+</button>
+<button class="w-8 h-8 flex items-center justify-center rounded-full bg-white/5 hover:bg-white/10 text-white/60 transition-colors">
+<span class="material-icons text-sm">sort</span>
+</button>
+</div>
+</div>
+<!-- Scrollable List Area -->
+<div class="flex-grow overflow-y-auto pr-2 space-y-4">
+<!-- Task Item 1: High Priority -->
+<div class="group flex items-center gap-4 p-4 rounded-lg bg-white/[0.02] hover:bg-white/[0.06] border border-transparent hover:border-white/10 transition-all duration-200">
+<label class="relative flex items-center cursor-pointer">
+<input class="custom-checkbox appearance-none w-6 h-6 border-2 border-white/30 rounded-full checked:bg-primary checked:border-primary transition-all" type="checkbox"/>
+<div class="absolute inset-0 rounded-full group-hover:shadow-[0_0_10px_rgba(244,192,37,0.4)] transition-shadow opacity-0 group-hover:opacity-100 pointer-events-none"></div>
+</label>
+<div class="flex-grow min-w-0">
+<h4 class="text-base font-medium text-white truncate group-hover:text-primary transition-colors">Finalizar presentación de Q3</h4>
+<div class="flex items-center gap-3 mt-1.5">
+<span class="text-[10px] uppercase font-bold tracking-wider text-purple-400 bg-purple-500/10 px-2 py-0.5 rounded-full">Trabajo</span>
+<span class="flex items-center gap-1 text-[10px] text-white/40">
+<span class="material-icons text-[12px]">schedule</span> 10:00 AM
+                                    </span>
+</div>
+</div>
+<div class="flex items-center gap-4">
+<span class="text-xs font-semibold text-red-400 bg-red-500/10 px-3 py-1 rounded-full border border-red-500/20">Alta</span>
+<button class="opacity-0 group-hover:opacity-100 text-white/30 hover:text-white transition-opacity">
+<span class="material-icons">more_vert</span>
+</button>
+</div>
+</div>
+<!-- Task Item 2: Medium Priority -->
+<div class="group flex items-center gap-4 p-4 rounded-lg bg-white/[0.02] hover:bg-white/[0.06] border border-transparent hover:border-white/10 transition-all duration-200">
+<label class="relative flex items-center cursor-pointer">
+<input class="custom-checkbox appearance-none w-6 h-6 border-2 border-white/30 rounded-full checked:bg-primary checked:border-primary transition-all" type="checkbox"/>
+</label>
+<div class="flex-grow min-w-0">
+<h4 class="text-base font-medium text-white truncate group-hover:text-primary transition-colors">Comprar regalo de aniversario</h4>
+<div class="flex items-center gap-3 mt-1.5">
+<span class="text-[10px] uppercase font-bold tracking-wider text-blue-400 bg-blue-500/10 px-2 py-0.5 rounded-full">Personal</span>
+</div>
+</div>
+<div class="flex items-center gap-4">
+<span class="text-xs font-semibold text-yellow-400 bg-yellow-500/10 px-3 py-1 rounded-full border border-yellow-500/20">Media</span>
+<button class="opacity-0 group-hover:opacity-100 text-white/30 hover:text-white transition-opacity">
+<span class="material-icons">more_vert</span>
+</button>
+</div>
+</div>
+<!-- Task Item 3: Low Priority -->
+<div class="group flex items-center gap-4 p-4 rounded-lg bg-white/[0.02] hover:bg-white/[0.06] border border-transparent hover:border-white/10 transition-all duration-200">
+<label class="relative flex items-center cursor-pointer">
+<input class="custom-checkbox appearance-none w-6 h-6 border-2 border-white/30 rounded-full checked:bg-primary checked:border-primary transition-all" type="checkbox"/>
+</label>
+<div class="flex-grow min-w-0">
+<h4 class="text-base font-medium text-white truncate group-hover:text-primary transition-colors">Renovar suscripción del gimnasio</h4>
+<div class="flex items-center gap-3 mt-1.5">
+<span class="text-[10px] uppercase font-bold tracking-wider text-green-400 bg-green-500/10 px-2 py-0.5 rounded-full">Compras</span>
+<span class="flex items-center gap-1 text-[10px] text-white/40">
+<span class="material-icons text-[12px]">schedule</span> 14:30 PM
+                                    </span>
+</div>
+</div>
+<div class="flex items-center gap-4">
+<span class="text-xs font-semibold text-green-400 bg-green-500/10 px-3 py-1 rounded-full border border-green-500/20">Baja</span>
+<button class="opacity-0 group-hover:opacity-100 text-white/30 hover:text-white transition-opacity">
+<span class="material-icons">more_vert</span>
+</button>
+</div>
+</div>
+<!-- Task Item 4: Completed -->
+<div class="group flex items-center gap-4 p-4 rounded-lg bg-transparent border border-white/5 opacity-50 hover:opacity-80 transition-all duration-200">
+<label class="relative flex items-center cursor-pointer">
+<input checked="" class="custom-checkbox appearance-none w-6 h-6 border-2 border-white/30 rounded-full checked:bg-primary checked:border-primary transition-all" type="checkbox"/>
+</label>
+<div class="flex-grow min-w-0">
+<h4 class="text-base font-medium text-white/60 line-through truncate">Sesión de Yoga Matutina</h4>
+<div class="flex items-center gap-3 mt-1.5">
+<span class="text-[10px] uppercase font-bold tracking-wider text-orange-400/60 bg-orange-500/5 px-2 py-0.5 rounded-full">Fitness</span>
+</div>
+</div>
+<div class="flex items-center gap-4">
+<button class="opacity-0 group-hover:opacity-100 text-white/30 hover:text-white transition-opacity">
+<span class="material-icons">delete</span>
+</button>
+</div>
+</div>
+<!-- Task Item 5: Completed -->
+<div class="group flex items-center gap-4 p-4 rounded-lg bg-transparent border border-white/5 opacity-50 hover:opacity-80 transition-all duration-200">
+<label class="relative flex items-center cursor-pointer">
+<input checked="" class="custom-checkbox appearance-none w-6 h-6 border-2 border-white/30 rounded-full checked:bg-primary checked:border-primary transition-all" type="checkbox"/>
+</label>
+<div class="flex-grow min-w-0">
+<h4 class="text-base font-medium text-white/60 line-through truncate">Leer 30 minutos</h4>
+<div class="flex items-center gap-3 mt-1.5">
+<span class="text-[10px] uppercase font-bold tracking-wider text-blue-400/60 bg-blue-500/5 px-2 py-0.5 rounded-full">Personal</span>
+</div>
+</div>
+<div class="flex items-center gap-4">
+<button class="opacity-0 group-hover:opacity-100 text-white/30 hover:text-white transition-opacity">
+<span class="material-icons">delete</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Add New Task Button -->
+<div class="mt-6 pt-4 border-t border-white/10">
+<button class="w-full group flex items-center gap-4 p-4 rounded-lg bg-primary/10 hover:bg-primary/20 border border-primary/20 hover:border-primary/50 transition-all duration-300">
+<div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center shadow-glow group-hover:scale-110 transition-transform">
+<span class="material-icons text-teal-dark font-bold">add</span>
+</div>
+<span class="text-primary font-semibold group-hover:translate-x-1 transition-transform">Agregar nueva tarea</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+</main>
+</body></html>

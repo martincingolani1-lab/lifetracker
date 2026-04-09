@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="es"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Premium Task Manager</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#f2c40d",
+                        "background-light": "#f8f8f5", // Keeping config but overriding in body for specific requested design
+                        "background-dark": "#221e10", // Keeping config but overriding in body for specific requested design
+                        "teal-moody": "#0F2E2E",
+                        "teal-glass": "rgba(22, 50, 50, 0.7)",
+                        "glass-border": "rgba(255, 255, 255, 0.08)",
+                    },
+                    fontFamily: {
+                        "display": ["Inter", "sans-serif"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "1rem", 
+                        "lg": "2rem", 
+                        "xl": "3rem", 
+                        "2xl": "1.5rem",
+                        "full": "9999px"
+                    },
+                    boxShadow: {
+                        'glass': '0 8px 32px 0 rgba(0, 0, 0, 0.37)',
+                        'glow': '0 0 15px rgba(242, 196, 13, 0.3)',
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        /* Custom scrollbar hide for cleaner look */
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+        
+        /* Glassmorphism utilities */
+        .glass-panel {
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.01) 100%);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .glass-nav {
+            background: rgba(15, 46, 46, 0.85);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        /* Checkbox animation styles */
+        .checkbox-wrapper input:checked + div {
+            background-color: #f2c40d;
+            border-color: #f2c40d;
+        }
+        
+        .checkbox-wrapper input:checked + div svg {
+            display: block;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-teal-moody text-white font-display min-h-screen relative overflow-x-hidden selection:bg-primary selection:text-teal-moody">
+<!-- Ambient Background Gradients -->
+<div class="fixed top-[-10%] left-[-10%] w-[50%] h-[50%] bg-primary/10 rounded-full blur-[100px] pointer-events-none"></div>
+<div class="fixed bottom-[10%] right-[-10%] w-[60%] h-[60%] bg-[#1a4d4d] rounded-full blur-[120px] pointer-events-none"></div>
+<div class="relative z-10 max-w-md mx-auto h-full min-h-screen flex flex-col pb-32">
+<!-- Header -->
+<header class="pt-14 px-6 mb-6">
+<h1 class="text-4xl font-bold leading-tight tracking-tight text-white">
+                Tus Pendientes,<br/>
+<span class="text-gray-500 font-medium">Organizados.</span>
+</h1>
+</header>
+<!-- Progress Card -->
+<section class="px-6 mb-8">
+<div class="glass-panel rounded-2xl p-6 relative overflow-hidden shadow-glass group">
+<div class="flex justify-between items-start mb-2">
+<div>
+<span class="text-xs font-semibold tracking-wider text-gray-400 uppercase">Progreso del día</span>
+<h2 class="text-2xl font-bold mt-1">4 de 7 tareas</h2>
+</div>
+<div class="h-10 w-10 rounded-full bg-white/5 flex items-center justify-center border border-white/10 text-primary">
+<span class="material-icons">analytics</span>
+</div>
+</div>
+<div class="mt-6 relative">
+<div class="h-2 w-full bg-white/10 rounded-full overflow-hidden">
+<div class="h-full bg-gradient-to-r from-primary/70 to-primary w-[60%] rounded-full shadow-glow"></div>
+</div>
+<p class="text-right text-xs text-primary mt-2 font-medium">Almost there!</p>
+</div>
+</div>
+</section>
+<!-- Categories Grid -->
+<section class="px-6 mb-8">
+<div class="grid grid-cols-2 gap-3 mb-3">
+<!-- Personal -->
+<button class="bg-[#3B82F6]/10 border border-[#3B82F6]/20 hover:bg-[#3B82F6]/20 active:scale-95 transition-all rounded-full py-3 px-4 flex items-center gap-2 group">
+<div class="w-2 h-2 rounded-full bg-[#3B82F6] shadow-[0_0_8px_rgba(59,130,246,0.6)]"></div>
+<span class="text-sm font-medium text-white/90">Personal</span>
+</button>
+<!-- Trabajo -->
+<button class="bg-[#A855F7]/10 border border-[#A855F7]/20 hover:bg-[#A855F7]/20 active:scale-95 transition-all rounded-full py-3 px-4 flex items-center gap-2">
+<div class="w-2 h-2 rounded-full bg-[#A855F7] shadow-[0_0_8px_rgba(168,85,247,0.6)]"></div>
+<span class="text-sm font-medium text-white/90">Trabajo</span>
+</button>
+<!-- Compras -->
+<button class="bg-[#22C55E]/10 border border-[#22C55E]/20 hover:bg-[#22C55E]/20 active:scale-95 transition-all rounded-full py-3 px-4 flex items-center gap-2">
+<div class="w-2 h-2 rounded-full bg-[#22C55E] shadow-[0_0_8px_rgba(34,197,94,0.6)]"></div>
+<span class="text-sm font-medium text-white/90">Compras</span>
+</button>
+<!-- Fitness -->
+<button class="bg-[#F97316]/10 border border-[#F97316]/20 hover:bg-[#F97316]/20 active:scale-95 transition-all rounded-full py-3 px-4 flex items-center gap-2">
+<div class="w-2 h-2 rounded-full bg-[#F97316] shadow-[0_0_8px_rgba(249,115,22,0.6)]"></div>
+<span class="text-sm font-medium text-white/90">Fitness</span>
+</button>
+</div>
+<button class="w-full border border-dashed border-white/20 hover:border-primary/50 hover:text-primary transition-colors rounded-full py-3 flex items-center justify-center gap-2 text-sm text-gray-400">
+<span class="material-icons text-base">add</span>
+                Nueva Categoría
+            </button>
+</section>
+<!-- Tasks List -->
+<section class="px-6 flex-1">
+<h3 class="text-lg font-semibold mb-4 flex items-center gap-2">
+                Tareas de Hoy
+                <span class="text-xs bg-white/10 px-2 py-0.5 rounded-md text-gray-300 font-normal">7</span>
+</h3>
+<div class="space-y-3">
+<!-- Task: Pending 1 (Priority) -->
+<div class="group flex items-center gap-4 bg-white/[0.03] hover:bg-white/[0.06] border border-white/5 p-4 rounded-2xl transition-all">
+<label class="checkbox-wrapper relative cursor-pointer flex items-center">
+<input class="peer sr-only" type="checkbox"/>
+<div class="w-6 h-6 rounded-full border-2 border-primary/50 peer-hover:border-primary transition-colors flex items-center justify-center">
+<svg class="w-3.5 h-3.5 text-teal-moody hidden" fill="none" stroke="currentColor" stroke-width="3" viewbox="0 0 24 24">
+<path d="M5 13l4 4L19 7" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+</div>
+</label>
+<div class="flex-1">
+<div class="flex justify-between items-start">
+<h4 class="text-base font-medium text-white">Preparar presentación</h4>
+<span class="bg-primary/20 text-primary text-[10px] font-bold px-2 py-1 rounded-full uppercase tracking-wide shadow-glow">Prioridad (Ayer)</span>
+</div>
+<p class="text-xs text-gray-500 mt-0.5">Trabajo • 10:00 AM</p>
+</div>
+</div>
+<!-- Task: Pending 2 -->
+<div class="group flex items-center gap-4 bg-white/[0.03] hover:bg-white/[0.06] border border-white/5 p-4 rounded-2xl transition-all">
+<label class="checkbox-wrapper relative cursor-pointer flex items-center">
+<input class="peer sr-only" type="checkbox"/>
+<div class="w-6 h-6 rounded-full border-2 border-primary/50 peer-hover:border-primary transition-colors flex items-center justify-center">
+<svg class="w-3.5 h-3.5 text-teal-moody hidden" fill="none" stroke="currentColor" stroke-width="3" viewbox="0 0 24 24">
+<path d="M5 13l4 4L19 7" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+</div>
+</label>
+<div class="flex-1">
+<h4 class="text-base font-medium text-white">Limpiar escritorio</h4>
+<p class="text-xs text-gray-500 mt-0.5">Personal • 12:30 PM</p>
+</div>
+</div>
+<!-- Task: Pending 3 -->
+<div class="group flex items-center gap-4 bg-white/[0.03] hover:bg-white/[0.06] border border-white/5 p-4 rounded-2xl transition-all">
+<label class="checkbox-wrapper relative cursor-pointer flex items-center">
+<input class="peer sr-only" type="checkbox"/>
+<div class="w-6 h-6 rounded-full border-2 border-primary/50 peer-hover:border-primary transition-colors flex items-center justify-center">
+<svg class="w-3.5 h-3.5 text-teal-moody hidden" fill="none" stroke="currentColor" stroke-width="3" viewbox="0 0 24 24">
+<path d="M5 13l4 4L19 7" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+</div>
+</label>
+<div class="flex-1">
+<h4 class="text-base font-medium text-white">Llamar al banco</h4>
+<p class="text-xs text-gray-500 mt-0.5">Finanzas • 2:00 PM</p>
+</div>
+</div>
+<!-- Divider -->
+<div class="py-2 flex items-center gap-4">
+<div class="h-px bg-white/10 flex-1"></div>
+<span class="text-xs text-gray-600 uppercase tracking-widest font-semibold">Completadas</span>
+<div class="h-px bg-white/10 flex-1"></div>
+</div>
+<!-- Task: Completed 1 -->
+<div class="group flex items-center gap-4 p-4 rounded-2xl opacity-60 hover:opacity-80 transition-opacity">
+<label class="checkbox-wrapper relative cursor-pointer flex items-center pointer-events-none">
+<input checked="" class="peer sr-only" type="checkbox"/>
+<div class="w-6 h-6 rounded-full border-2 border-primary bg-primary flex items-center justify-center">
+<svg class="w-3.5 h-3.5 text-teal-moody" fill="none" stroke="currentColor" stroke-width="3" viewbox="0 0 24 24">
+<path d="M5 13l4 4L19 7" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+</div>
+</label>
+<div class="flex-1">
+<h4 class="text-base font-medium text-gray-400 line-through decoration-primary/50">Enviar propuesta</h4>
+<p class="text-xs text-gray-600">Trabajo • 9:15 AM</p>
+</div>
+</div>
+<!-- Task: Completed 2 -->
+<div class="group flex items-center gap-4 p-4 rounded-2xl opacity-60 hover:opacity-80 transition-opacity">
+<label class="checkbox-wrapper relative cursor-pointer flex items-center pointer-events-none">
+<input checked="" class="peer sr-only" type="checkbox"/>
+<div class="w-6 h-6 rounded-full border-2 border-primary bg-primary flex items-center justify-center">
+<svg class="w-3.5 h-3.5 text-teal-moody" fill="none" stroke="currentColor" stroke-width="3" viewbox="0 0 24 24">
+<path d="M5 13l4 4L19 7" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+</div>
+</label>
+<div class="flex-1">
+<h4 class="text-base font-medium text-gray-400 line-through decoration-primary/50">Comprar verduras</h4>
+<p class="text-xs text-gray-600">Compras • Ayer</p>
+</div>
+</div>
+</div>
+</section>
+</div>
+<!-- Floating Action Button -->
+<button class="fixed z-30 bottom-24 right-6 w-14 h-14 bg-primary rounded-full shadow-glow flex items-center justify-center hover:scale-110 active:scale-95 transition-transform duration-200">
+<span class="material-icons text-teal-moody text-3xl">add</span>
+</button>
+<!-- Bottom Navigation -->
+<nav class="fixed bottom-0 left-0 w-full glass-nav pb-8 pt-4 z-20">
+<div class="flex justify-around items-center max-w-md mx-auto px-2">
+<a class="flex flex-col items-center gap-1 w-16 group" href="#">
+<span class="material-icons text-gray-500 group-hover:text-white transition-colors text-2xl">grid_view</span>
+<span class="text-[10px] text-gray-500 group-hover:text-white transition-colors font-medium">Dashboard</span>
+</a>
+<a class="flex flex-col items-center gap-1 w-16 group" href="#">
+<div class="relative">
+<span class="material-icons text-primary text-2xl drop-shadow-[0_0_8px_rgba(242,196,13,0.5)]">check_circle</span>
+<span class="absolute -top-1 -right-1 w-2 h-2 bg-primary rounded-full"></span>
+</div>
+<span class="text-[10px] text-primary font-bold">Tareas</span>
+</a>
+<a class="flex flex-col items-center gap-1 w-16 group" href="#">
+<span class="material-icons text-gray-500 group-hover:text-white transition-colors text-2xl">spa</span>
+<span class="text-[10px] text-gray-500 group-hover:text-white transition-colors font-medium">Hábitos</span>
+</a>
+<a class="flex flex-col items-center gap-1 w-16 group" href="#">
+<div class="w-7 h-7 rounded-full overflow-hidden border border-gray-600 group-hover:border-white transition-colors">
+<img alt="User avatar showing a smiling person" class="w-full h-full object-cover" data-alt="User profile picture" src="https://lh3.googleusercontent.com/aida-public/AB6AXuApsnfpP_RQdfGnUpGNvJyBoIM4SyNQ4P-pLbji-841SfCa9UUs4D5T9sQVPKar8JE0PuFmUUdkBO8CWysGpM6kVzrV7hxqTWfpWzV3JbyyOxz5b-QTYLfv-46wlILVSPtn6oXd9fXUPi-rNI3jWmjvQ-p5Zlhmxh8z_nkFLZTTMUFajjBRsvY-TDpNkOxspwidxoim63MYaaeus6ANJGMlJH3KM5TIA0Rikgr3XUmzR0CllNQdXa8iF1FyDoQMIAIziPTL5xiC9A"/>
+</div>
+<span class="text-[10px] text-gray-500 group-hover:text-white transition-colors font-medium">Perfil</span>
+</a>
+</div>
+</nav>
+</body></html>

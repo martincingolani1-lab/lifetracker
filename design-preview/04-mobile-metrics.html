@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="es"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>LifeTracker - Habit Metrics</title>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#eccb13",
+                        "background-light": "#f8f8f6",
+                        "background-dark": "#221f10", // Keeping config but overriding for specific screen requirements
+                        "custom-teal": "#0F2E2E",
+                        "custom-teal-light": "#1A4444",
+                    },
+                    fontFamily: {
+                        "display": ["Manrope", "sans-serif"]
+                    },
+                    borderRadius: {"DEFAULT": "1rem", "lg": "2rem", "xl": "3rem", "2xl": "4rem", "full": "9999px"},
+                    boxShadow: {
+                        'glow': '0 0 15px rgba(236, 203, 19, 0.5)',
+                        'glow-sm': '0 0 8px rgba(236, 203, 19, 0.4)',
+                        'glass': '0 8px 32px 0 rgba(0, 0, 0, 0.37)',
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        /* Custom scrollbar hiding */
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+        
+        /* Glassmorphism utility */
+        .glass-panel {
+            background: rgba(26, 68, 68, 0.4);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .glass-nav {
+            background: rgba(15, 46, 46, 0.85);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        /* Gradient Text */
+        .text-gradient-gold {
+            background: linear-gradient(to right, #eccb13, #ffeaa7);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        /* Animations */
+        @keyframes pulse-glow {
+            0%, 100% { opacity: 1; box-shadow: 0 0 5px #eccb13; }
+            50% { opacity: 0.6; box-shadow: 0 0 0px #eccb13; }
+        }
+        .animate-pulse-glow {
+            animation: pulse-glow 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
+
+        @keyframes pulse-green {
+            0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(74, 222, 128, 0.7); }
+            70% { transform: scale(1); box-shadow: 0 0 0 6px rgba(74, 222, 128, 0); }
+            100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(74, 222, 128, 0); }
+        }
+        .pulsing-dot {
+            animation: pulse-green 2s infinite;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-custom-teal font-display text-white selection:bg-primary selection:text-custom-teal antialiased h-screen overflow-hidden flex flex-col">
+<!-- Scrollable Content Area -->
+<main class="flex-1 overflow-y-auto no-scrollbar pb-32">
+<!-- Header Section -->
+<header class="pt-12 px-6 pb-6">
+<div class="flex items-center justify-between mb-2">
+<h1 class="text-3xl font-extrabold tracking-tight">📈 Métricas</h1>
+<button class="p-2 rounded-full bg-white/5 hover:bg-white/10 transition-colors">
+<span class="material-icons-round text-primary">calendar_today</span>
+</button>
+</div>
+<p class="text-gray-400 text-sm font-medium tracking-wide">Análisis de los últimos 30 días</p>
+</header>
+<!-- AI Insight Card -->
+<div class="px-6 mb-8">
+<div class="glass-panel rounded-lg p-6 relative overflow-hidden group">
+<!-- Abstract Glow Background inside card -->
+<div class="absolute -top-10 -right-10 w-32 h-32 bg-primary/20 rounded-full blur-3xl pointer-events-none group-hover:bg-primary/30 transition-all duration-700"></div>
+<div class="relative z-10">
+<div class="flex items-center gap-3 mb-3">
+<div class="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center shadow-glow-sm">
+<span class="material-icons-round text-primary text-sm">bolt</span>
+</div>
+<span class="text-primary text-xs font-bold uppercase tracking-widest">AI Insight</span>
+</div>
+<p class="text-white/90 italic text-lg leading-relaxed font-light">
+                        "¡Increíble nivel de disciplina! Tu consistencia promedio es del <span class="text-primary font-bold not-italic">87%</span>. Mantienes un ritmo de élite, especialmente con <span class="text-white font-medium not-italic">"Caminar"</span>."
+                    </p>
+</div>
+</div>
+</div>
+<!-- Timeline Chart -->
+<div class="px-6 mb-10">
+<div class="flex justify-between items-end mb-4">
+<h3 class="text-lg font-bold">Actividad Diaria</h3>
+<span class="text-xs text-gray-400">Total: 124 Hábitos</span>
+</div>
+<div class="flex items-end justify-between h-32 gap-1.5 pt-4 overflow-x-auto no-scrollbar mask-linear-gradient">
+<!-- Bars generated with varying heights and opacities -->
+<!-- High Activity -->
+<div class="w-2 bg-primary rounded-t-sm h-[80%] shadow-glow opacity-100 transition-all hover:h-[85%]"></div>
+<div class="w-2 bg-primary rounded-t-sm h-[90%] shadow-glow opacity-100"></div>
+<div class="w-2 bg-primary rounded-t-sm h-[60%] opacity-60"></div>
+<div class="w-2 bg-primary rounded-t-sm h-[40%] opacity-50"></div>
+<div class="w-2 bg-primary rounded-t-sm h-[85%] shadow-glow opacity-100"></div>
+<div class="w-2 bg-primary rounded-t-sm h-[95%] shadow-glow opacity-100"></div>
+<div class="w-2 bg-primary rounded-t-sm h-[30%] opacity-30"></div>
+<div class="w-2 bg-primary rounded-t-sm h-[75%] opacity-70"></div>
+<div class="w-2 bg-primary rounded-t-sm h-[90%] shadow-glow opacity-100"></div>
+<div class="w-2 bg-primary rounded-t-sm h-[100%] shadow-glow opacity-100"></div>
+<div class="w-2 bg-primary rounded-t-sm h-[50%] opacity-50"></div>
+<div class="w-2 bg-primary rounded-t-sm h-[20%] opacity-20"></div>
+<div class="w-2 bg-primary rounded-t-sm h-[80%] shadow-glow opacity-100"></div>
+<div class="w-2 bg-primary rounded-t-sm h-[65%] opacity-60"></div>
+<div class="w-2 bg-primary rounded-t-sm h-[88%] shadow-glow opacity-100"></div>
+<div class="w-2 bg-primary rounded-t-sm h-[92%] shadow-glow opacity-100"></div>
+<div class="w-2 bg-primary rounded-t-sm h-[45%] opacity-40"></div>
+<div class="w-2 bg-primary rounded-t-sm h-[35%] opacity-30"></div>
+<div class="w-2 bg-primary rounded-t-sm h-[85%] shadow-glow opacity-100"></div>
+<div class="w-2 bg-primary rounded-t-sm h-[70%] opacity-70"></div>
+<!-- Current Day (highlighted) -->
+<div class="w-2 bg-white rounded-t-sm h-[60%] animate-pulse shadow-glow"></div>
+</div>
+<div class="flex justify-between mt-2 text-[10px] uppercase text-gray-500 font-bold tracking-wider">
+<span>01 Nov</span>
+<span>Hoy</span>
+</div>
+</div>
+<!-- Habit Grid -->
+<div class="px-6">
+<h3 class="text-lg font-bold mb-5">Desglose por Hábito</h3>
+<div class="grid grid-cols-2 gap-4">
+<!-- Card 1: Caminar -->
+<div class="glass-panel p-5 rounded-lg flex flex-col gap-4 hover:bg-white/5 transition-all cursor-pointer border-l-4 border-l-primary/80">
+<div class="flex justify-between items-start">
+<div class="w-10 h-10 rounded-2xl bg-custom-teal-light flex items-center justify-center text-xl shadow-inner">
+                            🚶
+                        </div>
+<div class="flex items-center gap-1.5 bg-green-500/10 px-2 py-1 rounded-full border border-green-500/20">
+<div class="w-1.5 h-1.5 rounded-full bg-green-400 pulsing-dot"></div>
+<span class="text-[10px] font-bold text-green-400 uppercase">Activo</span>
+</div>
+</div>
+<div>
+<h4 class="font-bold text-white text-lg leading-tight">Caminar</h4>
+<div class="flex items-center gap-1 mt-1 text-primary">
+<span class="material-icons-round text-sm">local_fire_department</span>
+<span class="text-xs font-bold">45 Días</span>
+</div>
+</div>
+<div class="mt-auto pt-2">
+<div class="flex justify-between text-xs mb-1.5">
+<span class="text-gray-400">Consistencia</span>
+<span class="text-primary font-bold">98%</span>
+</div>
+<div class="h-1.5 w-full bg-gray-700/50 rounded-full overflow-hidden">
+<div class="h-full bg-primary w-[98%] rounded-full shadow-glow-sm"></div>
+</div>
+<div class="mt-3 inline-block px-3 py-1 rounded-full bg-primary/10 border border-primary/20 text-primary text-[10px] font-bold uppercase tracking-wider">
+                            Élite 🏆
+                        </div>
+</div>
+</div>
+<!-- Card 2: Tomar agua -->
+<div class="glass-panel p-5 rounded-lg flex flex-col gap-4 hover:bg-white/5 transition-all cursor-pointer">
+<div class="flex justify-between items-start">
+<div class="w-10 h-10 rounded-2xl bg-custom-teal-light flex items-center justify-center text-xl shadow-inner">
+                            💧
+                        </div>
+<div class="flex items-center gap-1.5 bg-green-500/10 px-2 py-1 rounded-full border border-green-500/20">
+<div class="w-1.5 h-1.5 rounded-full bg-green-400 pulsing-dot"></div>
+<span class="text-[10px] font-bold text-green-400 uppercase">Activo</span>
+</div>
+</div>
+<div>
+<h4 class="font-bold text-white text-lg leading-tight">Tomar agua</h4>
+<div class="flex items-center gap-1 mt-1 text-orange-400">
+<span class="material-icons-round text-sm">local_fire_department</span>
+<span class="text-xs font-bold">12 Días</span>
+</div>
+</div>
+<div class="mt-auto pt-2">
+<div class="flex justify-between text-xs mb-1.5">
+<span class="text-gray-400">Consistencia</span>
+<span class="text-white font-bold">85%</span>
+</div>
+<div class="h-1.5 w-full bg-gray-700/50 rounded-full overflow-hidden">
+<div class="h-full bg-primary/80 w-[85%] rounded-full"></div>
+</div>
+<div class="mt-3 inline-block px-3 py-1 rounded-full bg-white/5 border border-white/10 text-gray-300 text-[10px] font-bold uppercase tracking-wider">
+                            Sólido
+                        </div>
+</div>
+</div>
+<!-- Card 3: Leer -->
+<div class="glass-panel p-5 rounded-lg flex flex-col gap-4 hover:bg-white/5 transition-all cursor-pointer">
+<div class="flex justify-between items-start">
+<div class="w-10 h-10 rounded-2xl bg-custom-teal-light flex items-center justify-center text-xl shadow-inner">
+                            📖
+                        </div>
+<div class="flex items-center gap-1.5 bg-green-500/10 px-2 py-1 rounded-full border border-green-500/20">
+<div class="w-1.5 h-1.5 rounded-full bg-green-400 pulsing-dot"></div>
+<span class="text-[10px] font-bold text-green-400 uppercase">Activo</span>
+</div>
+</div>
+<div>
+<h4 class="font-bold text-white text-lg leading-tight">Leer</h4>
+<div class="flex items-center gap-1 mt-1 text-gray-400">
+<span class="material-icons-round text-sm">local_fire_department</span>
+<span class="text-xs font-bold">5 Días</span>
+</div>
+</div>
+<div class="mt-auto pt-2">
+<div class="flex justify-between text-xs mb-1.5">
+<span class="text-gray-400">Consistencia</span>
+<span class="text-white font-bold">60%</span>
+</div>
+<div class="h-1.5 w-full bg-gray-700/50 rounded-full overflow-hidden">
+<div class="h-full bg-primary/60 w-[60%] rounded-full"></div>
+</div>
+<div class="mt-3 inline-block px-3 py-1 rounded-full bg-white/5 border border-white/10 text-gray-400 text-[10px] font-bold uppercase tracking-wider">
+                            Construyendo
+                        </div>
+</div>
+</div>
+<!-- Card 4: Meditar -->
+<div class="glass-panel p-5 rounded-lg flex flex-col gap-4 hover:bg-white/5 transition-all cursor-pointer">
+<div class="flex justify-between items-start">
+<div class="w-10 h-10 rounded-2xl bg-custom-teal-light flex items-center justify-center text-xl shadow-inner">
+                            🧘
+                        </div>
+<div class="flex items-center gap-1.5 bg-green-500/10 px-2 py-1 rounded-full border border-green-500/20">
+<div class="w-1.5 h-1.5 rounded-full bg-green-400 pulsing-dot"></div>
+<span class="text-[10px] font-bold text-green-400 uppercase">Activo</span>
+</div>
+</div>
+<div>
+<h4 class="font-bold text-white text-lg leading-tight">Meditar</h4>
+<div class="flex items-center gap-1 mt-1 text-orange-300">
+<span class="material-icons-round text-sm">local_fire_department</span>
+<span class="text-xs font-bold">20 Días</span>
+</div>
+</div>
+<div class="mt-auto pt-2">
+<div class="flex justify-between text-xs mb-1.5">
+<span class="text-gray-400">Consistencia</span>
+<span class="text-white font-bold">90%</span>
+</div>
+<div class="h-1.5 w-full bg-gray-700/50 rounded-full overflow-hidden">
+<div class="h-full bg-primary/90 w-[90%] rounded-full shadow-glow-sm"></div>
+</div>
+<div class="mt-3 inline-block px-3 py-1 rounded-full bg-white/5 border border-white/10 text-gray-300 text-[10px] font-bold uppercase tracking-wider">
+                            Sólido
+                        </div>
+</div>
+</div>
+<!-- Card 5: Gym -->
+<div class="glass-panel p-5 rounded-lg flex flex-col gap-4 hover:bg-white/5 transition-all cursor-pointer grayscale opacity-70">
+<div class="flex justify-between items-start">
+<div class="w-10 h-10 rounded-2xl bg-custom-teal-light flex items-center justify-center text-xl shadow-inner">
+                            💪
+                        </div>
+<div class="flex items-center gap-1.5 bg-gray-500/10 px-2 py-1 rounded-full border border-gray-500/20">
+<div class="w-1.5 h-1.5 rounded-full bg-gray-400"></div>
+<span class="text-[10px] font-bold text-gray-400 uppercase">Descanso</span>
+</div>
+</div>
+<div>
+<h4 class="font-bold text-white text-lg leading-tight">Gym</h4>
+<div class="flex items-center gap-1 mt-1 text-gray-500">
+<span class="material-icons-round text-sm">local_fire_department</span>
+<span class="text-xs font-bold">0 Días</span>
+</div>
+</div>
+<div class="mt-auto pt-2">
+<div class="flex justify-between text-xs mb-1.5">
+<span class="text-gray-400">Consistencia</span>
+<span class="text-white font-bold">45%</span>
+</div>
+<div class="h-1.5 w-full bg-gray-700/50 rounded-full overflow-hidden">
+<div class="h-full bg-primary/40 w-[45%] rounded-full"></div>
+</div>
+<div class="mt-3 inline-block px-3 py-1 rounded-full bg-white/5 border border-white/10 text-gray-400 text-[10px] font-bold uppercase tracking-wider">
+                            Reiniciar
+                        </div>
+</div>
+</div>
+<!-- Card 6: Suplementos -->
+<div class="glass-panel p-5 rounded-lg flex flex-col gap-4 hover:bg-white/5 transition-all cursor-pointer">
+<div class="flex justify-between items-start">
+<div class="w-10 h-10 rounded-2xl bg-custom-teal-light flex items-center justify-center text-xl shadow-inner">
+                            💊
+                        </div>
+<div class="flex items-center gap-1.5 bg-green-500/10 px-2 py-1 rounded-full border border-green-500/20">
+<div class="w-1.5 h-1.5 rounded-full bg-green-400 pulsing-dot"></div>
+<span class="text-[10px] font-bold text-green-400 uppercase">Activo</span>
+</div>
+</div>
+<div>
+<h4 class="font-bold text-white text-lg leading-tight">Suplementos</h4>
+<div class="flex items-center gap-1 mt-1 text-orange-400">
+<span class="material-icons-round text-sm">local_fire_department</span>
+<span class="text-xs font-bold">18 Días</span>
+</div>
+</div>
+<div class="mt-auto pt-2">
+<div class="flex justify-between text-xs mb-1.5">
+<span class="text-gray-400">Consistencia</span>
+<span class="text-white font-bold">92%</span>
+</div>
+<div class="h-1.5 w-full bg-gray-700/50 rounded-full overflow-hidden">
+<div class="h-full bg-primary/90 w-[92%] rounded-full shadow-glow-sm"></div>
+</div>
+<div class="mt-3 inline-block px-3 py-1 rounded-full bg-white/5 border border-white/10 text-gray-300 text-[10px] font-bold uppercase tracking-wider">
+                            Sólido
+                        </div>
+</div>
+</div>
+</div>
+</div>
+</main>
+<!-- Floating Glass Bottom Navigation -->
+<nav class="absolute bottom-6 left-6 right-6 h-[72px] rounded-2xl glass-nav flex items-center justify-around z-50 shadow-glass">
+<a class="flex flex-col items-center justify-center w-12 h-12 rounded-xl text-gray-400 hover:text-white transition-colors" href="#">
+<span class="material-icons-round text-2xl">home</span>
+</a>
+<a class="flex flex-col items-center justify-center w-12 h-12 rounded-xl text-primary bg-primary/10 transition-colors shadow-glow-sm relative" href="#">
+<span class="material-icons-round text-2xl">bar_chart</span>
+<span class="absolute -top-1 -right-1 w-2 h-2 rounded-full bg-primary shadow-glow"></span>
+</a>
+<a class="flex flex-col items-center justify-center w-14 h-14 rounded-full bg-primary text-custom-teal -mt-8 border-4 border-custom-teal shadow-glow hover:scale-105 transition-transform" href="#">
+<span class="material-icons-round text-3xl">add</span>
+</a>
+<a class="flex flex-col items-center justify-center w-12 h-12 rounded-xl text-gray-400 hover:text-white transition-colors" href="#">
+<span class="material-icons-round text-2xl">emoji_events</span>
+</a>
+<a class="flex flex-col items-center justify-center w-12 h-12 rounded-xl text-gray-400 hover:text-white transition-colors" href="#">
+<span class="material-icons-round text-2xl">person</span>
+</a>
+</nav>
+<!-- Background Gradient Overlay for "Moody" feel -->
+<div class="fixed top-0 left-0 right-0 h-40 bg-gradient-to-b from-custom-teal via-custom-teal/80 to-transparent pointer-events-none z-20"></div>
+</body></html>
