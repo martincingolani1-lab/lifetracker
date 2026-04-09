@@ -12,15 +12,13 @@ const NutritionDashboard: React.FC = () => {
           <MacroOverview />
         </div>
 
-        {/* Centro: Comidas */}
-        <div className="lg:col-span-6 flex flex-col gap-6">
+        {/* Derecha: Comidas arriba, Agua + Suplementos abajo */}
+        <div className="lg:col-span-9 flex flex-col gap-6">
           <MealPlanner />
-        </div>
-
-        {/* Derecha: Agua + Suplementos */}
-        <div className="lg:col-span-3 flex flex-col gap-6">
-          <WaterTracker />
-          <SupplementTracker />
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <WaterTracker />
+            <SupplementTracker />
+          </div>
         </div>
       </div>
     </div>
