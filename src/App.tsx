@@ -1,3 +1,5 @@
+'use client';
+
 import React from 'react';
 import { ChevronLeft, ChevronRight, Calendar, LogOut, Utensils, Zap, ListTodo, LayoutDashboard, Settings, Plus } from 'lucide-react';
 import { Toaster } from 'react-hot-toast';
