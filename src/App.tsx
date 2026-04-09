@@ -1,11 +1,13 @@
 'use client';
 
 import React from 'react';
-import { ChevronLeft, ChevronRight, Calendar, LogOut, Utensils, ListTodo, LayoutDashboard, Settings, Plus } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Calendar, LogOut, Utensils, Zap, ListTodo, LayoutDashboard, Settings, Plus } from 'lucide-react';
 import { Toaster } from 'react-hot-toast';
 import { UserProvider, useUser } from './store/userStore';
 import GeneralOverview from './components/Dashboard/GeneralOverview';
 import AnalyticsDashboard from './components/Analytics/AnalyticsDashboard';
+import HabitDashboard from './components/Habits/HabitDashboard';
+import HabitMetrics from './components/Habits/HabitMetrics';
 import TodoDashboard from './components/Todo/TodoDashboard';
 import AppSettings from './components/Settings/AppSettings';
 import Auth from './components/Auth/Auth';
@@ -55,12 +57,12 @@ const FloatingParticles: React.FC = () => {
 
 // Separate component for content to use context
 const AppContent = () => {
-  const { selectedDate, setSelectedDate, session, loadingSession, logout, theme, liteMode } = useUser();
+  const { selectedDate, setSelectedDate, session, loadingSession, logout, cheatMealsPerWeek, theme, liteMode } = useUser();
   const [currentView, setCurrentView] = React.useState<'dashboard' | 'analytics'>(() =>
     (localStorage.getItem('lt_view') as 'dashboard' | 'analytics') || 'dashboard'
   );
-  const [currentModule, setCurrentModule] = React.useState<'home' | 'nutrition' | 'todo' | 'settings'>(() =>
-    (localStorage.getItem('lt_module') as 'home' | 'nutrition' | 'todo' | 'settings') || 'home'
+  const [currentModule, setCurrentModule] = React.useState<'home' | 'nutrition' | 'habits' | 'todo' | 'settings'>(() =>
+    (localStorage.getItem('lt_module') as 'home' | 'nutrition' | 'habits' | 'todo' | 'settings') || 'home'
   );
   const [quickMealOpen, setQuickMealOpen] = React.useState(false);
 
@@ -108,11 +110,13 @@ const AppContent = () => {
   const navItems = [
     { id: 'home' as const, icon: LayoutDashboard, label: 'Home' },
     { id: 'nutrition' as const, icon: Utensils, label: 'Nutrición' },
+    { id: 'habits' as const, icon: Zap, label: 'Hábitos' },
     { id: 'todo' as const, icon: ListTodo, label: 'Tareas' },
   ];
 
   const navColors: Record<string, string> = {
     nutrition: 'text-green-400',
+    habits: 'text-yellow-400',
     todo: 'text-blue-400',
   };
 
@@ -187,7 +191,7 @@ const AppContent = () => {
 
           {/* Right: Actions (PC Only) */}
           <div className="hidden md:flex items-center gap-4 justify-end">
-            {currentModule === 'nutrition' && (
+            {(currentModule === 'nutrition' || currentModule === 'habits') && (
               <div className="flex items-center gap-1 mr-2 bg-white/5 p-1 rounded-xl backdrop-blur-sm border border-border">
                 <button
                   onClick={() => setCurrentView('dashboard')}
@@ -329,7 +333,8 @@ const AppContent = () => {
             <ChevronRight size={12} className="flex-shrink-0 opacity-40" />
             <span className="text-text-main font-display font-bold flex-shrink-0">
               {currentModule === 'nutrition' ? 'Nutrición' :
-                currentModule === 'todo' ? 'Tareas' : 'Configuración'}
+                currentModule === 'habits' ? 'Hábitos' :
+                  currentModule === 'todo' ? 'Tareas' : 'Configuración'}
             </span>
             {currentModule === 'nutrition' && currentView === 'analytics' && (
               <>
@@ -344,6 +349,8 @@ const AppContent = () => {
         <div key={`${currentModule}-${currentView}`} className="page-transition">
           {currentModule === 'home' ? (
             <GeneralOverview setModule={setCurrentModule} />
+          ) : currentModule === 'habits' ? (
+            currentView === 'dashboard' ? <HabitDashboard /> : <HabitMetrics />
           ) : currentModule === 'todo' ? (
             <TodoDashboard />
           ) : currentModule === 'settings' ? (
@@ -426,6 +433,9 @@ const AppContent = () => {
       {/* Quick Meal Bottom Sheet */}
       <QuickMealSheet isOpen={quickMealOpen} onClose={() => setQuickMealOpen(false)} />
 
+      <div className="fixed bottom-2 right-4 text-[10px] text-gray-700 pointer-events-none opacity-30 font-display">
+        v2.0 — {cheatMealsPerWeek}/sem
+      </div>
     </div>
   );
 };

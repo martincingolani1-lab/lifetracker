@@ -3,28 +3,31 @@ import { useUser } from '../../store/userStore';
 import {
     Activity,
     Utensils,
+    Zap,
     ListTodo,
     ChevronRight,
     Sparkles,
-    Target,
-    Droplets,
-    Pill,
+    Sun,
+    Scale,
+    TrendingDown,
+    TrendingUp as TrendingUpIcon,
+    Target
 } from 'lucide-react';
 import { FRUIT_MACROS } from '../../store/userStore';
+import SmartInsights from '../UI/SmartInsights';
+import type { WeeklyHistoryData } from '../../types';
 
 interface GeneralOverviewProps {
-    setModule: (module: 'home' | 'nutrition' | 'todo' | 'settings') => void;
+    setModule: (module: 'home' | 'nutrition' | 'habits' | 'todo' | 'settings') => void;
 }
 
 const GeneralOverview: React.FC<GeneralOverviewProps> = ({ setModule }) => {
     const {
         dailyTargets,
         meals,
+        habits,
         todoList,
-        fruitIntake,
-        waterIntake,
-        waterTarget,
-        supplements,
+        fruitIntake
     } = useUser();
 
     // Nutrition Stats
@@ -34,26 +37,72 @@ const GeneralOverview: React.FC<GeneralOverviewProps> = ({ setModule }) => {
         fats: (fruitIntake.apples * FRUIT_MACROS.apples.fats) + (fruitIntake.oranges * FRUIT_MACROS.oranges.fats) + (fruitIntake.bananas * FRUIT_MACROS.bananas.fats),
     };
 
+    const mealProtein = meals.reduce((acc, m) => m.completed ? acc + m.targetMacros.protein : acc, 0);
+    const mealCarbs = meals.reduce((acc, m) => m.completed ? acc + m.targetMacros.carbs : acc, 0);
+    const mealFats = meals.reduce((acc, m) => m.completed ? acc + m.targetMacros.fats : acc, 0);
+
     const consumed = {
-        protein: meals.reduce((acc, m) => m.completed ? acc + m.targetMacros.protein : acc, 0) + fruitConsumed.protein,
-        carbs: meals.reduce((acc, m) => m.completed ? acc + m.targetMacros.carbs : acc, 0) + fruitConsumed.carbs,
-        fats: meals.reduce((acc, m) => m.completed ? acc + m.targetMacros.fats : acc, 0) + fruitConsumed.fats,
+        protein: mealProtein + fruitConsumed.protein,
+        carbs: mealCarbs + fruitConsumed.carbs,
+        fats: mealFats + fruitConsumed.fats,
     };
 
     const totalCals = (consumed.protein * 4) + (consumed.carbs * 4) + (consumed.fats * 9);
     const targetCals = (dailyTargets.protein * 4) + (dailyTargets.carbs * 4) + (dailyTargets.fats * 9);
     const nutritionProgress = Math.min((totalCals / targetCals) * 100, 100);
 
-    // Todo Stats
+    // Habits Stats
+    const activeHabits = habits.filter(h => !h.archived);
+    const completedHabits = activeHabits.filter(h => h.completed).length;
+    const habitsProgress = activeHabits.length > 0 ? (completedHabits / activeHabits.length) * 100 : 0;
+
+    // To-do Stats
     const completedTasks = todoList.filter(t => t.completed).length;
     const pendingTasks = todoList.filter(t => !t.completed).length;
 
-    // Water Stats
-    const waterProgress = Math.min((waterIntake / waterTarget) * 100, 100);
+    // Wakeup & Weight Stats
+    const [history, setHistory] = React.useState<WeeklyHistoryData[]>([]);
+    const [habitHistory, setHabitHistory] = React.useState<{ date: string, habits: any[] }[]>([]);
+    const { getWeeklyHistory, getHabitHistory } = useUser();
 
-    // Supplements Stats
-    const takenSupplements = supplements.filter(s => s.taken).length;
-    const supplementsProgress = supplements.length > 0 ? (takenSupplements / supplements.length) * 100 : 0;
+    React.useEffect(() => {
+        const fetchHistory = async () => {
+            const [hw, hh] = await Promise.all([
+                getWeeklyHistory(7),
+                getHabitHistory(7)
+            ]);
+            setHistory(hw);
+            setHabitHistory(hh);
+        };
+        fetchHistory();
+    }, [getWeeklyHistory, getHabitHistory]);
+
+    // Calculate Average Wakeup
+    const wakeupHabit = activeHabits.find(h => h.name.toLowerCase().includes('wake up'));
+    let wakeupAvg = '--:--';
+    if (wakeupHabit && habitHistory.length > 0) {
+        const wakeupValues = habitHistory
+            .map(h => h.habits.find((hab: any) => hab.id === wakeupHabit.id)?.value)
+            .filter(v => typeof v === 'string' && v.includes(':')) as string[];
+
+        if (wakeupValues.length > 0) {
+            const totalMinutes = wakeupValues.reduce((acc, time) => {
+                const [h, m] = time.split(':').map(Number);
+                return acc + (h * 60) + m;
+            }, 0);
+            const avgMin = Math.round(totalMinutes / wakeupValues.length);
+            const hh = Math.floor(avgMin / 60);
+            const mm = avgMin % 60;
+            wakeupAvg = `${String(hh).padStart(2, '0')}:${String(mm).padStart(2, '0')}`;
+        }
+    }
+
+    // Weight Evolution
+    const weightHistory = history.map(h => h.weight).filter(w => w !== undefined) as number[];
+    const currentWeight = weightHistory.length > 0 ? weightHistory[weightHistory.length - 1] : null;
+    const prevWeight = weightHistory.length > 1 ? weightHistory[weightHistory.length - 2] : null;
+    const weightDiff = currentWeight !== null && prevWeight !== null ? (currentWeight - prevWeight).toFixed(1) : null;
+    const isWeightDown = weightDiff !== null && Number(weightDiff) < 0;
 
     const cards = [
         {
@@ -69,28 +118,16 @@ const GeneralOverview: React.FC<GeneralOverviewProps> = ({ setModule }) => {
             glowColor: 'rgba(16, 185, 129, 0.15)',
         },
         {
-            id: 'water',
-            module: 'nutrition' as const,
-            icon: Droplets,
-            iconBg: 'bg-cyan-500/10',
-            iconColor: 'text-cyan-400',
-            value: `${waterIntake}ml`,
-            suffix: `/ ${waterTarget}ml`,
-            progress: waterProgress,
-            barColor: 'from-cyan-500 via-sky-400 to-blue-400',
-            glowColor: 'rgba(6, 182, 212, 0.15)',
-        },
-        {
-            id: 'supplements',
-            module: 'nutrition' as const,
-            icon: Pill,
-            iconBg: 'bg-violet-500/10',
-            iconColor: 'text-violet-400',
-            value: `${takenSupplements} / ${supplements.length}`,
-            suffix: 'suplementos',
-            progress: supplementsProgress,
-            barColor: 'from-violet-500 via-purple-400 to-violet-300',
-            glowColor: 'rgba(139, 92, 246, 0.15)',
+            id: 'habits',
+            module: 'habits' as const,
+            icon: Zap,
+            iconBg: 'bg-yellow-500/10',
+            iconColor: 'text-yellow-400',
+            value: `${completedHabits} / ${activeHabits.length}`,
+            suffix: 'hábitos',
+            progress: habitsProgress,
+            barColor: 'from-yellow-500 via-amber-400 to-yellow-300',
+            glowColor: 'rgba(250, 204, 21, 0.15)',
         },
         {
             id: 'todo',
@@ -104,6 +141,37 @@ const GeneralOverview: React.FC<GeneralOverviewProps> = ({ setModule }) => {
             completedText: `Has completado ${completedTasks} hoy`,
             barColor: '',
             glowColor: 'rgba(59, 130, 246, 0.15)',
+        },
+        {
+            id: 'wakeup',
+            module: 'habits' as const,
+            icon: Sun,
+            iconBg: 'bg-orange-500/10',
+            iconColor: 'text-orange-400',
+            value: wakeupAvg,
+            suffix: 'Wakeup (avg 7d)',
+            progress: null,
+            completedText: 'Tu hora promedio de levantada',
+            barColor: '',
+            glowColor: 'rgba(249, 115, 22, 0.15)',
+        },
+        {
+            id: 'weight',
+            module: 'habits' as const,
+            icon: Scale,
+            iconBg: 'bg-indigo-500/10',
+            iconColor: 'text-indigo-400',
+            value: currentWeight !== null ? `${currentWeight}kg` : '--',
+            suffix: 'Peso actual',
+            progress: null,
+            completedText: weightDiff !== null ? (
+                <span className="flex items-center gap-1">
+                    {isWeightDown ? <TrendingDown size={12} className="text-emerald-400" /> : <TrendingUpIcon size={12} className="text-rose-400" />}
+                    {weightDiff}kg esta semana
+                </span>
+            ) : 'Registra tu peso para ver evolución',
+            barColor: '',
+            glowColor: 'rgba(99, 102, 241, 0.15)',
         },
         {
             id: 'macros',
@@ -137,6 +205,11 @@ const GeneralOverview: React.FC<GeneralOverviewProps> = ({ setModule }) => {
                 </p>
             </div>
 
+            {/* Smart Insights */}
+            <div className="animate-fade-up stagger-2">
+                <SmartInsights habits={habits} consistency={habitsProgress} />
+            </div>
+
             {/* Bento Grid */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                 {cards.map((card, i) => {
@@ -153,10 +226,11 @@ const GeneralOverview: React.FC<GeneralOverviewProps> = ({ setModule }) => {
                                 transition-all duration-500
                                 hover:shadow-[0_20px_60px_-15px_var(--glow-color)]
                                 hover-lift shimmer-border
-                                animate-fade-up stagger-${i + 2}
+                                animate-fade-up stagger-${i + 3}
                             `}
                             style={{ '--glow-color': card.glowColor } as React.CSSProperties}
                         >
+                            {/* Decorative corner glow */}
                             <div
                                 className="absolute -top-12 -right-12 w-32 h-32 rounded-full blur-[60px] opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none"
                                 style={{ background: card.glowColor }}

@@ -11,7 +11,7 @@ export interface Meal {
     name: string;
     targetMacros: Macros;
     completed: boolean;
-    completedAt?: string;
+    completedAt?: string; // ISO string
     skipped?: boolean;
 }
 
@@ -39,6 +39,26 @@ export interface TodoItem {
     priority?: boolean;
 }
 
+export type HabitType = 'regular' | 'numeric' | 'time';
+
+export interface Habit {
+    id: string;
+    name: string;
+    emoji: string;
+    color?: string; // Hex color
+    type: HabitType;
+    completed: boolean;
+    streak: number;
+    frequency: string[]; // ['Mon', 'Tue', ...]
+    target?: number; // For numeric (e.g., 7000 steps)
+    unit?: string; // For numeric (e.g., 'pasos', 'kg')
+    reminderTime?: string; // HH:mm
+    value?: number | string; // Current value (number for numeric, string for time)
+    category?: string;
+    archived?: boolean;
+    timeOfDay?: 'morning' | 'afternoon' | 'evening';
+}
+
 export interface FruitIntake {
     apples: number;
     oranges: number;
@@ -59,8 +79,11 @@ export interface UserState {
     supplements: Supplement[];
     waterIntake: number;
     waterTarget: number;
+    lastCheatTimestamp: string | null;
+    cheatMealsPerWeek: number;
     coachInstructions: string;
     coachEquivalencies: string;
+    habits: Habit[];
     todoList: TodoItem[];
     todoCategories: TodoCategory[];
     fruitIntake: FruitIntake;
@@ -70,6 +93,7 @@ export interface GlobalSettings {
     waterTarget: number;
     waterIntake?: number;
     supplements: Supplement[];
+    habits: Habit[];
     todoCategories: TodoCategory[];
     todoList?: TodoItem[];
     frequentMeals?: FrequentMeal[];
@@ -86,6 +110,9 @@ export interface UserContextType extends UserState {
     toggleMealCompletion: (mealId: number) => void;
     toggleMealSkipped: (mealId: number) => void;
     logAIAssistedMeal: (mealId: number, macros: Macros) => void;
+    registerCheatMeal: () => void;
+    undoCheatMeal: () => void;
+    setCheatMealsPerWeek: (count: number) => void;
     setCoachInstructions: (instructions: string) => void;
     setCoachEquivalencies: (equivalencies: string) => void;
     toggleSupplement: (id: string) => void;
@@ -100,11 +127,19 @@ export interface UserContextType extends UserState {
     session: Session | null;
     loadingSession: boolean;
     logout: () => Promise<void>;
+    addHabit: (habit: Omit<Habit, 'id' | 'completed' | 'streak'>) => void;
+    toggleHabit: (id: string) => void;
+    deleteHabit: (id: string) => void;
+    restoreHabit: (habit: Habit, index: number) => void;
+    updateHabit: (id: string, updates: Partial<Habit>) => void;
+    reorderHabits: (newOrder: Habit[]) => void;
+    updateHabitValue: (id: string, value: number | string) => void;
     addTodo: (text: string, category: string, priority?: boolean) => void;
     toggleTodo: (id: string) => void;
     deleteTodo: (id: string) => void;
     addTodoCategory: (category: Omit<TodoCategory, 'id'>) => void;
     deleteTodoCategory: (id: string) => void;
+
     globalSettings: GlobalSettings | null;
     incrementFruit: (fruit: keyof FruitIntake) => void;
     decrementFruit: (fruit: keyof FruitIntake) => void;
@@ -117,7 +152,17 @@ export interface UserContextType extends UserState {
     setTheme: (theme: string) => void;
     liteMode: boolean;
     setLiteMode: (lite: boolean) => void;
+    updateHabitsForDate: (date: Date, habits: Habit[]) => Promise<void>;
+    getMonthlyHabitStats: (date: Date) => Promise<MonthlyHabitStats[]>;
+    getHabitsForDateRange: (startDate: Date, endDate: Date) => Promise<MonthlyHabitStats[]>;
+    getHabitHistory: (days: number) => Promise<MonthlyHabitStats[]>;
     deleteAccount: () => Promise<void>;
+}
+
+
+export interface MonthlyHabitStats {
+    date: string;
+    habits: Habit[];
 }
 
 export interface WeeklyHistoryData {
