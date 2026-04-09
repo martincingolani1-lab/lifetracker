@@ -2,7 +2,7 @@ import { createContext, useContext, useState, useEffect, type ReactNode, useCall
 import { supabase } from '../lib/supabase';
 import { toast } from 'react-hot-toast';
 import type {
-    Macros, Meal, Supplement, Habit, TodoItem, TodoCategory,
+    Macros, Meal, Supplement, Habit,
     UserContextType, GlobalSettings, WeeklyHistoryData, FruitIntake, FrequentMeal
 } from '../types';
 import type { Session } from '@supabase/supabase-js';
@@ -24,20 +24,11 @@ export const FRUIT_MACROS: Record<keyof FruitIntake, Macros> = {
 
 const INITIAL_HABITS: Habit[] = [];
 
-const INITIAL_TODO_CATEGORIES: TodoCategory[] = [
-    { id: 'personal', label: 'Personal', icon: 'person', color: 'text-blue-400', isDefault: true },
-    { id: 'work', label: 'Trabajo', icon: 'work', color: 'text-purple-400', isDefault: true },
-    { id: 'health', label: 'Salud', icon: 'favorite', color: 'text-primary', isDefault: true },
-    { id: 'other', label: 'Otros', icon: 'more_horiz', color: 'text-gray-400', isDefault: true },
-];
-
 const INITIAL_GLOBAL_SETTINGS: GlobalSettings = {
     waterTarget: 3000,
     supplements: INITIAL_SUPPLEMENTS,
     habits: INITIAL_HABITS,
-    todoCategories: INITIAL_TODO_CATEGORIES,
     waterIntake: 0,
-    todoList: [],
     frequentMeals: [],
     theme: 'color',
     liteMode: false
@@ -101,13 +92,9 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
     const [supplements, setSupplements] = useState<Supplement[]>(INITIAL_SUPPLEMENTS);
     const [waterIntake, setWaterIntake] = useState(0);
     const [waterTarget, setWaterTargetState] = useState(3000);
-    const [lastCheatTimestamp, setLastCheatTimestamp] = useState<string | null>(null);
-    const [cheatMealsPerWeek, setCheatMealsPerWeekState] = useState(1);
     const [coachInstructions, setCoachInstructionsState] = useState('');
     const [coachEquivalencies, setCoachEquivalenciesState] = useState('');
     const [habits, setHabits] = useState<Habit[]>(INITIAL_HABITS);
-    const [todoList, setTodoList] = useState<TodoItem[]>([]);
-    const [todoCategories, setTodoCategories] = useState<TodoCategory[]>(INITIAL_TODO_CATEGORIES);
     const [fruitIntake, setFruitIntake] = useState<FruitIntake>(INITIAL_FRUIT_INTAKE);
     const [frequentMeals, setFrequentMeals] = useState<FrequentMeal[]>([]);
     const [theme, setThemeState] = useState<string>('color');
@@ -235,7 +222,6 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
                 }
 
                 setDailyTargetsState(parsed.dailyTargets || INITIAL_TARGETS);
-                setCheatMealsPerWeekState(parsed.cheatMealsPerWeek || 1);
                 setCoachInstructionsState(parsed.coachInstructions || '');
                 setCoachEquivalenciesState(parsed.coachEquivalencies || '');
                 setFruitIntake(parsed.fruitIntake || INITIAL_FRUIT_INTAKE);
@@ -268,17 +254,6 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
                     }));
                 }
 
-                if (isTodayOrFuture && currentSettings?.todoCategories) {
-                    setTodoCategories(currentSettings.todoCategories);
-                } else {
-                    setTodoCategories(parsed.todoCategories || INITIAL_TODO_CATEGORIES);
-                }
-
-                const globalTodos = currentSettings?.todoList || [];
-                const dailyTodos = (parsed.todoList || []).filter((t: TodoItem) => t.completed);
-                const mergedTodos = Array.from(new Map([...globalTodos, ...dailyTodos].map(t => [t.id, t])).values());
-                setTodoList(mergedTodos);
-
             } else if ((error && error.code === 'PGRST116') || (data && !data.data)) {
                 const recent = recentLogs?.[0]?.data;
                 const baseSupplements = currentSettings?.supplements || recent?.supplements || INITIAL_SUPPLEMENTS;
@@ -305,25 +280,8 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
                             };
                         }));
 
-                    const globalTodos = currentSettings?.todoList || [];
-                    const recentUncompleted = (recent.todoList || []).filter((t: TodoItem) => !t.completed);
-
-                    if (globalTodos.length === 0 && recentUncompleted.length > 0) {
-                        syncGlobalSettings({ todoList: recentUncompleted });
-                    }
-
-                    const finalTodoList = Array.from(new Map([...globalTodos, ...recentUncompleted].map(t => [t.id, t])).values());
-                    setTodoList(finalTodoList);
-
-                    if (currentSettings?.todoCategories) {
-                        setTodoCategories(currentSettings.todoCategories);
-                    } else {
-                        setTodoCategories(recent.todoCategories || INITIAL_TODO_CATEGORIES);
-                    }
-
                     setWaterIntake(0);
                     setWaterTargetState(baseWaterTarget);
-                    setCheatMealsPerWeekState(recent.cheatMealsPerWeek || 1);
                     setCoachInstructionsState(recent.coachInstructions || '');
                     setCoachEquivalenciesState(recent.coachEquivalencies || '');
                     setFruitIntake(INITIAL_FRUIT_INTAKE);
@@ -334,13 +292,6 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
                         .filter((h: Habit) => !h.archived)
                         .map((h: Habit) => ({ ...h, completed: false, value: h.type === 'numeric' ? 0 : '' })));
 
-                    if (currentSettings?.todoCategories) {
-                        setTodoCategories(currentSettings.todoCategories);
-                    } else {
-                        setTodoCategories(INITIAL_TODO_CATEGORIES);
-                    }
-
-                    setTodoList([]);
                     setWaterIntake(0);
                     setWaterTargetState(baseWaterTarget);
                     setDailyTargetsState(INITIAL_TARGETS);
@@ -362,26 +313,11 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
         if (!session) return;
         let currentSettings = globalSettingsRef.current;
 
-        const fetchLastCheat = async (userId: string) => {
-            const { data: cheatData } = await supabase
-                .from('daily_logs')
-                .select('data')
-                .eq('user_id', userId)
-                .order('date', { ascending: false })
-                .limit(100);
-
-            if (cheatData) {
-                const lastCheat = cheatData.find(row => row.data && row.data.cheatTimestamp);
-                setLastCheatTimestamp(lastCheat ? lastCheat.data.cheatTimestamp : null);
-            }
-        };
-
         if (!isInitialized) {
             const [settingsResult] = await Promise.all([
                 !currentSettings
                     ? supabase.from('user_sync').select('logs').eq('user_id', session.user.id).single()
                     : Promise.resolve({ data: { logs: currentSettings } }),
-                fetchLastCheat(session.user.id)
             ]);
 
             if (settingsResult.data?.logs) {
@@ -471,50 +407,18 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
             // This prevents overwriting history with current data when switching days rapidly
             if (loadedDateRef.current !== dateKey) return;
 
-            const uncompleted = todoList.filter(t => !t.completed);
-            const completed = todoList.filter(t => t.completed);
-
-            // Sync uncompleted to global settings if they changed
-            const currentGlobalTodos = globalSettingsRef.current?.todoList || [];
-            if (JSON.stringify(currentGlobalTodos) !== JSON.stringify(uncompleted)) {
-                syncGlobalSettings({ todoList: uncompleted });
-            }
-
-            const dataToSave: {
-                mealCount: number;
-                meals: Meal[];
-                supplements: Supplement[];
-                waterIntake: number;
-                waterTarget: number;
-                dailyTargets: Macros;
-                cheatMealsPerWeek: number;
-                coachInstructions: string;
-                coachEquivalencies: string;
-                habits: Habit[];
-                todoList: TodoItem[];
-                todoCategories: TodoCategory[];
-                fruitIntake: FruitIntake;
-                cheatTimestamp?: string | null;
-            } = {
+            const dataToSave = {
                 mealCount: mealCount,
                 meals: meals,
                 supplements: supplements,
                 waterIntake: waterIntake,
                 waterTarget: waterTarget,
                 dailyTargets: dailyTargets,
-                cheatMealsPerWeek: cheatMealsPerWeek,
                 coachInstructions: coachInstructions,
                 coachEquivalencies: coachEquivalencies,
                 habits: habits,
-                todoList: completed, // Only save completed tasks to daily log
-                todoCategories: todoCategories,
                 fruitIntake: fruitIntake,
             };
-
-            const isCheatDayMatch = lastCheatTimestamp && new Date(lastCheatTimestamp).toDateString() === selectedDate.toDateString();
-            if (isCheatDayMatch) {
-                dataToSave.cheatTimestamp = lastCheatTimestamp;
-            }
 
             const now = new Date().toISOString();
             try {
@@ -545,7 +449,7 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
             clearTimeout(timeoutId);
             saveData(); // Force save on unmount/dep change
         };
-    }, [meals, supplements, habits, todoList, todoCategories, mealCount, selectedDate, isInitialized, waterIntake, dailyTargets, waterTarget, lastCheatTimestamp, cheatMealsPerWeek, coachInstructions, coachEquivalencies, session, fruitIntake, frequentMeals, syncGlobalSettings]);
+    }, [meals, supplements, habits, mealCount, selectedDate, isInitialized, waterIntake, dailyTargets, waterTarget, coachInstructions, coachEquivalencies, session, fruitIntake, syncGlobalSettings]);
 
     // Handlers
     const setMealCount = (count: number) => {
@@ -607,15 +511,6 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
 
     const toggleSupplement = (id: string) => {
         setSupplements(prev => prev.map(s => s.id === id ? { ...s, taken: !s.taken } : s));
-    };
-
-    const registerCheatMeal = () => {
-        const timestamp = new Date().toISOString();
-        setLastCheatTimestamp(timestamp);
-    };
-
-    const undoCheatMeal = () => {
-        setLastCheatTimestamp(null);
     };
 
     const addSupplement = (supplement: Omit<Supplement, 'id' | 'taken'>) => {
@@ -755,34 +650,8 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
         syncGlobalSettings({ waterTarget: target });
     };
 
-    const setCheatMealsPerWeek = (count: number) => setCheatMealsPerWeekState(count);
     const setCoachInstructions = (instructions: string) => setCoachInstructionsState(instructions);
     const setCoachEquivalencies = (eq: string) => setCoachEquivalenciesState(eq);
-
-    const addTodoCategory = (category: Omit<TodoCategory, 'id'>) => {
-        const newCategory: TodoCategory = { ...category, id: crypto.randomUUID() };
-        const newList = [...todoCategories, newCategory];
-        setTodoCategories(newList);
-        syncGlobalSettings({ todoCategories: newList });
-    };
-
-    const deleteTodoCategory = (id: string) => {
-        const newList = todoCategories.filter(c => c.id !== id);
-        setTodoCategories(newList);
-        syncGlobalSettings({ todoCategories: newList });
-    };
-
-    const addTodo = (text: string, category: string, priority: boolean = false) => {
-        setTodoList(prev => [...prev, { id: Date.now().toString(), text, category, completed: false, priority }]);
-    };
-
-    const toggleTodo = (id: string) => {
-        setTodoList(prev => prev.map(t => t.id === id ? { ...t, completed: !t.completed } : t));
-    };
-
-    const deleteTodo = (id: string) => {
-        setTodoList(prev => prev.filter(t => t.id !== id));
-    };
 
     const incrementFruit = (fruit: keyof FruitIntake) => {
         setFruitIntake((prev: FruitIntake) => ({
@@ -1053,11 +922,6 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
             toggleMealCompletion,
             toggleMealSkipped,
             logAIAssistedMeal,
-            registerCheatMeal,
-            undoCheatMeal,
-            lastCheatTimestamp,
-            cheatMealsPerWeek,
-            setCheatMealsPerWeek,
             coachInstructions,
             setCoachInstructions,
             coachEquivalencies,
@@ -1070,13 +934,6 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
             updateHabit,
             reorderHabits,
             updateHabitValue,
-            todoList,
-            todoCategories,
-            addTodo,
-            addTodoCategory,
-            deleteTodoCategory,
-            toggleTodo,
-            deleteTodo,
             toggleSupplement,
             addSupplement,
             updateSupplement,

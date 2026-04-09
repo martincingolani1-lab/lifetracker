@@ -4,7 +4,6 @@ import {
     Activity,
     Utensils,
     Zap,
-    ListTodo,
     ChevronRight,
     Sparkles,
     Sun,
@@ -18,7 +17,7 @@ import SmartInsights from '../UI/SmartInsights';
 import type { WeeklyHistoryData } from '../../types';
 
 interface GeneralOverviewProps {
-    setModule: (module: 'home' | 'nutrition' | 'habits' | 'todo' | 'settings') => void;
+    setModule: (module: 'home' | 'nutrition' | 'habits' | 'settings') => void;
 }
 
 const GeneralOverview: React.FC<GeneralOverviewProps> = ({ setModule }) => {
@@ -26,7 +25,6 @@ const GeneralOverview: React.FC<GeneralOverviewProps> = ({ setModule }) => {
         dailyTargets,
         meals,
         habits,
-        todoList,
         fruitIntake
     } = useUser();
 
@@ -55,10 +53,6 @@ const GeneralOverview: React.FC<GeneralOverviewProps> = ({ setModule }) => {
     const activeHabits = habits.filter(h => !h.archived);
     const completedHabits = activeHabits.filter(h => h.completed).length;
     const habitsProgress = activeHabits.length > 0 ? (completedHabits / activeHabits.length) * 100 : 0;
-
-    // To-do Stats
-    const completedTasks = todoList.filter(t => t.completed).length;
-    const pendingTasks = todoList.filter(t => !t.completed).length;
 
     // Wakeup & Weight Stats
     const [history, setHistory] = React.useState<WeeklyHistoryData[]>([]);
@@ -128,19 +122,6 @@ const GeneralOverview: React.FC<GeneralOverviewProps> = ({ setModule }) => {
             progress: habitsProgress,
             barColor: 'from-yellow-500 via-amber-400 to-yellow-300',
             glowColor: 'rgba(250, 204, 21, 0.15)',
-        },
-        {
-            id: 'todo',
-            module: 'todo' as const,
-            icon: ListTodo,
-            iconBg: 'bg-blue-500/10',
-            iconColor: 'text-blue-400',
-            value: pendingTasks,
-            suffix: 'tareas pendientes',
-            progress: null,
-            completedText: `Has completado ${completedTasks} hoy`,
-            barColor: '',
-            glowColor: 'rgba(59, 130, 246, 0.15)',
         },
         {
             id: 'wakeup',

@@ -23,22 +23,6 @@ export interface Supplement {
     taken: boolean;
 }
 
-export interface TodoCategory {
-    id: string;
-    label: string;
-    icon: string;
-    color: string;
-    isDefault?: boolean;
-}
-
-export interface TodoItem {
-    id: string;
-    text: string;
-    completed: boolean;
-    category: string;
-    priority?: boolean;
-}
-
 export type HabitType = 'regular' | 'numeric' | 'time';
 
 export interface Habit {
@@ -79,13 +63,9 @@ export interface UserState {
     supplements: Supplement[];
     waterIntake: number;
     waterTarget: number;
-    lastCheatTimestamp: string | null;
-    cheatMealsPerWeek: number;
     coachInstructions: string;
     coachEquivalencies: string;
     habits: Habit[];
-    todoList: TodoItem[];
-    todoCategories: TodoCategory[];
     fruitIntake: FruitIntake;
 }
 
@@ -94,8 +74,6 @@ export interface GlobalSettings {
     waterIntake?: number;
     supplements: Supplement[];
     habits: Habit[];
-    todoCategories: TodoCategory[];
-    todoList?: TodoItem[];
     frequentMeals?: FrequentMeal[];
     theme?: string;
     liteMode?: boolean;
@@ -110,9 +88,6 @@ export interface UserContextType extends UserState {
     toggleMealCompletion: (mealId: number) => void;
     toggleMealSkipped: (mealId: number) => void;
     logAIAssistedMeal: (mealId: number, macros: Macros) => void;
-    registerCheatMeal: () => void;
-    undoCheatMeal: () => void;
-    setCheatMealsPerWeek: (count: number) => void;
     setCoachInstructions: (instructions: string) => void;
     setCoachEquivalencies: (equivalencies: string) => void;
     toggleSupplement: (id: string) => void;
@@ -134,12 +109,6 @@ export interface UserContextType extends UserState {
     updateHabit: (id: string, updates: Partial<Habit>) => void;
     reorderHabits: (newOrder: Habit[]) => void;
     updateHabitValue: (id: string, value: number | string) => void;
-    addTodo: (text: string, category: string, priority?: boolean) => void;
-    toggleTodo: (id: string) => void;
-    deleteTodo: (id: string) => void;
-    addTodoCategory: (category: Omit<TodoCategory, 'id'>) => void;
-    deleteTodoCategory: (id: string) => void;
-
     globalSettings: GlobalSettings | null;
     incrementFruit: (fruit: keyof FruitIntake) => void;
     decrementFruit: (fruit: keyof FruitIntake) => void;
