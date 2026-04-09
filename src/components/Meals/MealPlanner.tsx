@@ -1,20 +1,16 @@
 import React from 'react';
 import { useUser, FRUIT_MACROS } from '../../store/userStore';
-import { Check, Plus, Minus, Bookmark, Save, Trash2, Edit2, Slash, ChevronDown } from 'lucide-react';
+import { Check, Plus, Minus, Slash } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 const MealPlanner: React.FC = () => {
     const {
         mealCount, setMealCount, meals, toggleMealCompletion, toggleMealSkipped,
         updateMealMacros, updateMealName, dailyTargets,
-        fruitIntake, incrementFruit, decrementFruit,
-        frequentMeals, addFrequentMeal, applyFrequentMeal, deleteFrequentMeal, updateFrequentMeal
+        fruitIntake, incrementFruit, decrementFruit
     } = useUser();
     const isLight = useUser().theme === 'light';
     const [isEditingPlan, setIsEditingPlan] = React.useState(false);
-    const [editingFreqId, setEditingFreqId] = React.useState<string | null>(null);
-    const [tempFreqName, setTempFreqName] = React.useState('');
-    const [openFreqMeal, setOpenFreqMeal] = React.useState<number | null>(null);
 
     const handleMacroChange = (mealId: number, key: 'protein' | 'carbs' | 'fats', value: string) => {
         const numValue = parseInt(value) || 0;
@@ -138,68 +134,22 @@ const MealPlanner: React.FC = () => {
                                     </div>
                                 ))}
                             </div>
-
-                            {/* Frequent meals quick-apply */}
-                            {frequentMeals.length > 0 && !meal.skipped && (
-                                <div className="relative">
-                                    <button
-                                        onClick={() => setOpenFreqMeal(openFreqMeal === meal.id ? null : meal.id)}
-                                        className="flex items-center gap-1 text-[10px] text-text-muted hover:text-primary transition-colors"
-                                    >
-                                        <Bookmark size={10} />
-                                        <span>Frecuentes</span>
-                                        <ChevronDown size={10} className={`transition-transform ${openFreqMeal === meal.id ? 'rotate-180' : ''}`} />
-                                    </button>
-                                    <AnimatePresence>
-                                        {openFreqMeal === meal.id && (
-                                            <motion.div
-                                                initial={{ opacity: 0, y: -4 }}
-                                                animate={{ opacity: 1, y: 0 }}
-                                                exit={{ opacity: 0, y: -4 }}
-                                                className="absolute z-20 top-full left-0 mt-1 w-44 bg-card border border-border rounded-xl shadow-xl p-2 space-y-1"
-                                            >
-                                                {frequentMeals.map((freq) => (
-                                                    <button
-                                                        key={freq.id}
-                                                        onClick={() => { applyFrequentMeal(meal.id, freq.id); setOpenFreqMeal(null); }}
-                                                        className="w-full text-left px-2 py-1.5 rounded-lg hover:bg-white/5 transition-colors"
-                                                    >
-                                                        <div className="text-xs font-semibold text-text-main">{freq.name}</div>
-                                                        <div className="text-[10px] text-text-muted/60 font-mono">{freq.macros.protein}P {freq.macros.carbs}C {freq.macros.fats}G</div>
-                                                    </button>
-                                                ))}
-                                            </motion.div>
-                                        )}
-                                    </AnimatePresence>
-                                </div>
-                            )}
-
-                            {/* Save as frequent (edit mode) */}
-                            {isEditingPlan && (meal.targetMacros.protein > 0 || meal.targetMacros.carbs > 0) && (
-                                <button
-                                    onClick={() => addFrequentMeal({ name: meal.name, macros: meal.targetMacros })}
-                                    className="flex items-center gap-1 text-[10px] text-primary/70 hover:text-primary transition-colors"
-                                >
-                                    <Save size={10} /> Guardar
-                                </button>
-                            )}
                         </div>
                     );
                 })}
             </div>
 
             {/* Frutas */}
-            <div className="mt-5 pt-4 border-t border-border">
-                <span className="text-[10px] font-bold text-text-muted uppercase tracking-widest mb-3 block">Frutas</span>
+            <div className="mt-4 pt-3 border-t border-border">
                 <div className="grid grid-cols-3 gap-2">
                     {[
                         { id: 'apples' as const, name: 'Manzana', icon: '🍎', color: isLight ? 'bg-red-500/10 text-red-700 border-red-500/20' : 'bg-red-500/5 text-red-400 border-red-500/10' },
                         { id: 'oranges' as const, name: 'Naranja', icon: '🍊', color: isLight ? 'bg-orange-500/10 text-orange-700 border-orange-500/20' : 'bg-orange-500/5 text-orange-400 border-orange-500/10' },
                         { id: 'bananas' as const, name: 'Banana', icon: '🍌', color: isLight ? 'bg-yellow-500/10 text-yellow-700 border-yellow-500/20' : 'bg-yellow-500/5 text-yellow-500 border-yellow-500/10' },
                     ].map((fruit) => (
-                        <div key={fruit.id} className={`flex items-center justify-between p-2 px-3 rounded-xl border transition-all hover:bg-white/5 ${fruit.color}`}>
-                            <div className="flex items-center gap-2">
-                                <span className="text-lg">{fruit.icon}</span>
+                        <div key={fruit.id} className={`flex items-center justify-between py-1.5 px-2.5 rounded-xl border transition-all hover:bg-white/5 ${fruit.color}`}>
+                            <div className="flex items-center gap-1.5">
+                                <span className="text-base">{fruit.icon}</span>
                                 <span className="text-[9px] font-extrabold uppercase tracking-tight">{fruit.name}</span>
                             </div>
                             <div className="flex items-center gap-1.5">
