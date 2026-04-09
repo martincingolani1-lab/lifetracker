@@ -1,6 +1,6 @@
 import React from 'react';
 import { useUser, FRUIT_MACROS } from '../../store/userStore';
-import { Check, Plus, Minus, Slash } from 'lucide-react';
+import { Check, Plus, Minus, ChevronsRight } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 const MealPlanner: React.FC = () => {
@@ -107,14 +107,13 @@ const MealPlanner: React.FC = () => {
                                         {meal.name}
                                     </span>
                                 )}
-                                {isEditingPlan && (
-                                    <button
-                                        onClick={() => toggleMealSkipped(meal.id)}
-                                        className={`ml-auto flex-shrink-0 p-1 rounded transition-colors ${meal.skipped ? 'text-red-400' : 'text-text-muted/40 hover:text-red-400'}`}
-                                    >
-                                        <Slash size={11} />
-                                    </button>
-                                )}
+                                <button
+                                    onClick={() => toggleMealSkipped(meal.id)}
+                                    title={meal.skipped ? 'Reactivar' : 'Saltear'}
+                                    className={`ml-auto flex-shrink-0 p-1 rounded-lg transition-all ${meal.skipped ? 'text-red-400 bg-red-500/10' : 'text-text-muted/30 hover:text-orange-400 hover:bg-orange-500/10'}`}
+                                >
+                                    <ChevronsRight size={13} />
+                                </button>
                             </div>
 
                             {/* Macro inputs */}
