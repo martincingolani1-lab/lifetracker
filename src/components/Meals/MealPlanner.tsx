@@ -127,7 +127,7 @@ const MealPlanner: React.FC = () => {
                                             onChange={(e) => handleMacroChange(meal.id, f.key, e.target.value)}
                                             placeholder={suggested ? String(suggested[f.key]) : '0'}
                                             disabled={meal.skipped}
-                                            className={`w-full bg-white/5 border border-white/10 rounded-lg py-1.5 px-2 text-xs font-semibold text-text-main focus:outline-none focus:bg-white/8 ${f.border} placeholder:text-text-muted/30 transition-colors`}
+                                            className={`w-full bg-white/5 border border-white/10 rounded-lg py-2.5 px-2 text-xs font-semibold text-text-main focus:outline-none focus:bg-white/8 ${f.border} placeholder:text-text-muted/30 transition-colors`}
                                         />
                                         <span className="text-[10px] text-text-muted/50 flex-shrink-0">g</span>
                                     </div>
