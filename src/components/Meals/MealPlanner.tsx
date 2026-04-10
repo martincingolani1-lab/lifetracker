@@ -49,7 +49,7 @@ const MealPlanner: React.FC = () => {
     ];
 
     return (
-        <div className="bg-card border border-border rounded-2xl p-5 shadow-sm">
+        <div className="bg-card border border-border rounded-2xl p-5 pb-7 shadow-sm">
             {/* Header */}
             <div className="flex items-center justify-between mb-4">
                 <h2 className="text-sm font-display font-bold text-text-muted uppercase tracking-widest">Comidas del Día</h2>

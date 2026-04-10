@@ -35,12 +35,12 @@ const SupplementTracker: React.FC = () => {
   };
 
   const renderGroup = (title: string, items: typeof supplements, icon: React.ReactNode, colorClass: string) => (
-    <div className="mb-4 last:mb-0">
-      <div className={`flex items-center gap-2 mb-2 text-[10px] font-bold uppercase tracking-widest ${colorClass} opacity-80`}>
+    <div className="mb-2 last:mb-0">
+      <div className={`flex items-center gap-2 mb-1 text-[9px] font-bold uppercase tracking-widest ${colorClass} opacity-80`}>
         {icon}
         {title}
       </div>
-      <div className="space-y-1.5">
+      <div className="space-y-1">
         <AnimatePresence>
           {items.map((s) => (
             <motion.div
@@ -52,25 +52,25 @@ const SupplementTracker: React.FC = () => {
               className="relative"
             >
               {isEditing ? (
-                <div className="flex items-center gap-2 bg-card p-2 rounded-lg border border-border">
-                  <div className="flex-1 space-y-2">
+                <div className="flex items-center gap-2 bg-card p-1.5 rounded-lg border border-border">
+                  <div className="flex-1 space-y-1">
                     <input
                       value={s.name}
                       onChange={(e) => updateSupplement(s.id, { name: e.target.value })}
-                      className="w-full bg-background rounded px-2 py-1 text-xs text-text-main focus:border-green-500/50 outline-none"
+                      className="w-full bg-background rounded px-2 py-0.5 text-xs text-text-main focus:border-green-500/50 outline-none"
                       placeholder="Nombre"
                     />
                     <div className="flex gap-2">
                       <input
                         value={s.timing}
                         onChange={(e) => updateSupplement(s.id, { timing: e.target.value })}
-                        className="flex-1 bg-background rounded px-2 py-1 text-[10px] text-text-muted focus:border-green-500/50 outline-none"
+                        className="flex-1 bg-background rounded px-2 py-0.5 text-[10px] text-text-muted focus:border-green-500/50 outline-none"
                         placeholder="Horario"
                       />
                       <select
                         value={s.type}
                         onChange={(e) => updateSupplement(s.id, { type: e.target.value as 'hormonal' | 'gym' })}
-                        className="bg-background rounded px-1 py-1 text-[10px] text-text-muted focus:border-green-500/50 outline-none"
+                        className="bg-background rounded px-1 py-0.5 text-[10px] text-text-muted focus:border-green-500/50 outline-none"
                       >
                         <option value="hormonal">Hormonal</option>
                         <option value="gym">Gym</option>
@@ -79,9 +79,9 @@ const SupplementTracker: React.FC = () => {
                   </div>
                   <button
                     onClick={() => deleteSupplement(s.id)}
-                    className="p-2 text-red-400 hover:bg-red-500/10 rounded-md transition-colors"
+                    className="p-1.5 text-red-400 hover:bg-red-500/10 rounded-md transition-colors"
                   >
-                    <Trash2 size={14} />
+                    <Trash2 size={13} />
                   </button>
                 </div>
               ) : (
@@ -89,12 +89,12 @@ const SupplementTracker: React.FC = () => {
                   whileHover={{ scale: 1.01, x: 2 }}
                   whileTap={{ scale: 0.98 }}
                   onClick={() => toggleSupplement(s.id)}
-                  className={`w-full flex items-center justify-between p-2.5 pl-3 rounded-lg transition-all duration-300 group border ${s.taken ? 'bg-blue-900/10 border-blue-500/20' : 'bg-card/50 border-border hover:border-border hover:bg-white/5'}`}
+                  className={`w-full flex items-center justify-between py-1.5 px-2 rounded-lg transition-all duration-300 group border ${s.taken ? 'bg-blue-900/10 border-blue-500/20' : 'bg-card/50 border-border hover:border-border hover:bg-white/5'}`}
                 >
-                  <div className="flex items-center gap-3">
-                    <div className={`w-1 h-8 rounded-full ${s.taken ? 'bg-primary' : 'bg-text-muted/20 group-hover:bg-primary'} transition-all`} />
-                    <div className="flex flex-col items-start gap-0.5">
-                      <span className={`text-xs font-medium transition-colors ${s.taken ? 'text-primary' : 'text-text-main group-hover:text-primary'}`}>
+                  <div className="flex items-center gap-2">
+                    <div className={`w-0.5 h-5 rounded-full ${s.taken ? 'bg-primary' : 'bg-text-muted/20 group-hover:bg-primary'} transition-all`} />
+                    <div className="flex flex-col items-start">
+                      <span className={`text-[11px] font-medium leading-tight transition-colors ${s.taken ? 'text-primary' : 'text-text-main group-hover:text-primary'}`}>
                         {s.name}
                       </span>
                       <span className="text-[9px] text-text-muted font-medium uppercase tracking-wide group-hover:text-primary/70 transition-colors">
@@ -102,8 +102,8 @@ const SupplementTracker: React.FC = () => {
                       </span>
                     </div>
                   </div>
-                  <div className={`w-4 h-4 rounded border flex items-center justify-center transition-all ${s.taken ? 'bg-primary border-primary shadow shadow-primary/20' : 'border-text-muted/30 bg-transparent group-hover:border-primary/50'}`} >
-                    {s.taken && <Check size={10} className={isLight ? "text-white" : "text-black"} strokeWidth={3} />}
+                  <div className={`w-3.5 h-3.5 rounded border flex items-center justify-center transition-all ${s.taken ? 'bg-primary border-primary shadow shadow-primary/20' : 'border-text-muted/30 bg-transparent group-hover:border-primary/50'}`} >
+                    {s.taken && <Check size={9} className={isLight ? "text-white" : "text-black"} strokeWidth={3} />}
                   </div>
                 </motion.button>
               )}
@@ -133,7 +133,7 @@ const SupplementTracker: React.FC = () => {
 
       <div className="flex-1 overflow-y-auto pr-1 -mr-2 custom-scrollbar">
         {renderGroup('Hormonal', hormonal, null, isLight ? 'text-purple-700' : 'text-purple-400')}
-        <div className="w-full h-px bg-white/5 my-4" />
+        <div className="w-full h-px bg-white/5 my-2" />
         {renderGroup('Rendimiento', gym, null, isLight ? 'text-cyan-700' : 'text-cyan-400')}
 
         {isEditing && (
