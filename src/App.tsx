@@ -64,6 +64,28 @@ const AppContent = () => {
     (localStorage.getItem('lt_module') as 'home' | 'nutrition' | 'habits' | 'settings') || 'home'
   );
   const [quickMealOpen, setQuickMealOpen] = React.useState(false);
+  const mainRef = React.useRef<HTMLElement>(null);
+
+  // Compensate for scale-75: negates the empty DOM space below scaled content
+  React.useEffect(() => {
+    const el = mainRef.current;
+    if (!el) return;
+    let raf: number;
+    const adjust = () => {
+      if (window.innerWidth >= 768) {
+        el.style.marginBottom = `-${Math.round(el.scrollHeight * 0.25)}px`;
+      } else {
+        el.style.marginBottom = '';
+      }
+    };
+    const debounced = () => { cancelAnimationFrame(raf); raf = requestAnimationFrame(adjust); };
+    debounced();
+    const ro = new ResizeObserver(debounced);
+    ro.observe(el);
+    const mq = window.matchMedia('(min-width: 768px)');
+    mq.addEventListener('change', debounced);
+    return () => { ro.disconnect(); mq.removeEventListener('change', debounced); cancelAnimationFrame(raf); };
+  }, []);
 
   // Sync state to localStorage
   React.useEffect(() => {
@@ -317,7 +339,7 @@ const AppContent = () => {
       />
 
       {/* ═══════ MAIN CONTENT ═══════ */}
-      <main className="main-content w-full md:w-[133.33%] px-4 md:px-6 pt-[calc(10rem+env(safe-area-inset-top,0px))] md:pt-32 pb-[calc(10rem+env(safe-area-inset-bottom,20px))] md:pb-6 relative z-10 space-y-4">
+      <main ref={mainRef} className="w-full md:w-[133.33%] px-4 md:px-6 pt-[calc(10rem+env(safe-area-inset-top,0px))] md:pt-32 pb-[calc(10rem+env(safe-area-inset-bottom,20px))] md:pb-6 relative z-10 space-y-4 md:scale-75 md:origin-top-left">
         {/* Breadcrumbs */}
         {currentModule !== 'home' && (
           <nav className="flex items-center gap-2 text-[10px] md:text-sm text-text-muted mb-4 overflow-x-auto whitespace-nowrap pb-2 animate-fade-up" aria-label="Breadcrumb">

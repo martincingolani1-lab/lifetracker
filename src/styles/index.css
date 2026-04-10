@@ -1244,10 +1244,3 @@ h3 {
 .animate-fab-float {
     animation: fab-float 4s ease-in-out infinite;
 }
-
-/* ─── Desktop zoom: usa zoom en lugar de scale para evitar scroll vacío ─── */
-@media (min-width: 768px) {
-    .main-content {
-        zoom: 0.75;
-    }
-}
