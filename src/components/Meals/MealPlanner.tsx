@@ -82,7 +82,7 @@ const MealPlanner: React.FC = () => {
                             className={`rounded-xl border px-3 py-5 flex flex-col gap-4 transition-all duration-300 min-h-[260px] ${
                                 meal.completed ? 'bg-green-500/5 border-green-500/20' :
                                 meal.skipped ? 'opacity-50 border-border/40 bg-card/40' :
-                                'bg-background/60 border-border hover:border-white/15'
+                                isLight ? 'bg-black/[0.03] border-border hover:border-black/15' : 'bg-background/60 border-border hover:border-white/15'
                             }`}
                         >
                             {/* Meal name + toggle */}
@@ -127,7 +127,7 @@ const MealPlanner: React.FC = () => {
                                             onChange={(e) => handleMacroChange(meal.id, f.key, e.target.value)}
                                             placeholder={suggested ? String(suggested[f.key]) : '0'}
                                             disabled={meal.skipped}
-                                            className={`w-full bg-white/5 border border-white/10 rounded-lg py-2.5 px-2 text-xs font-semibold text-text-main focus:outline-none focus:bg-white/8 ${f.border} placeholder:text-text-muted/30 transition-colors`}
+                                            className={`w-full ${isLight ? 'bg-black/5 border-black/10' : 'bg-white/5 border-white/10'} border rounded-lg py-2.5 px-2 text-xs font-semibold text-text-main focus:outline-none ${isLight ? 'focus:bg-black/8' : 'focus:bg-white/8'} ${f.border} placeholder:text-text-muted/30 transition-colors`}
                                         />
                                         <span className="text-[10px] text-text-muted/50 flex-shrink-0">g</span>
                                     </div>
@@ -146,17 +146,17 @@ const MealPlanner: React.FC = () => {
                         { id: 'oranges' as const, name: 'Naranja', icon: '🍊', color: isLight ? 'bg-orange-500/10 text-orange-700 border-orange-500/20' : 'bg-orange-500/5 text-orange-400 border-orange-500/10' },
                         { id: 'bananas' as const, name: 'Banana', icon: '🍌', color: isLight ? 'bg-yellow-500/10 text-yellow-700 border-yellow-500/20' : 'bg-yellow-500/5 text-yellow-500 border-yellow-500/10' },
                     ].map((fruit) => (
-                        <div key={fruit.id} className={`flex items-center justify-between py-1.5 px-2.5 rounded-xl border transition-all hover:bg-white/5 ${fruit.color}`}>
+                        <div key={fruit.id} className={`flex items-center justify-between py-1.5 px-2.5 rounded-xl border transition-all ${isLight ? 'hover:bg-black/5' : 'hover:bg-white/5'} ${fruit.color}`}>
                             <div className="flex items-center gap-1.5">
                                 <span className="text-base">{fruit.icon}</span>
                                 <span className="text-[9px] font-extrabold uppercase tracking-tight">{fruit.name}</span>
                             </div>
                             <div className="flex items-center gap-1.5">
-                                <button onClick={() => decrementFruit(fruit.id)} className="w-5 h-5 rounded-lg bg-white/5 flex items-center justify-center hover:bg-white/10 active:scale-90 transition-all">
+                                <button onClick={() => decrementFruit(fruit.id)} className={`w-5 h-5 rounded-lg ${isLight ? 'bg-black/5 hover:bg-black/10' : 'bg-white/5 hover:bg-white/10'} flex items-center justify-center active:scale-90 transition-all`}>
                                     <Minus size={10} />
                                 </button>
                                 <span className="text-sm font-black min-w-[1.2ch] text-center">{fruitIntake[fruit.id]}</span>
-                                <button onClick={() => incrementFruit(fruit.id)} className="w-5 h-5 rounded-lg bg-white/5 flex items-center justify-center hover:bg-white/10 active:scale-90 transition-all">
+                                <button onClick={() => incrementFruit(fruit.id)} className={`w-5 h-5 rounded-lg ${isLight ? 'bg-black/5 hover:bg-black/10' : 'bg-white/5 hover:bg-white/10'} flex items-center justify-center active:scale-90 transition-all`}>
                                     <Plus size={10} />
                                 </button>
                             </div>
