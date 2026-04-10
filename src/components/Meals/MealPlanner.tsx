@@ -49,7 +49,7 @@ const MealPlanner: React.FC = () => {
     ];
 
     return (
-        <div className="bg-card border border-border rounded-2xl p-5 pb-7 shadow-sm">
+        <div className="bg-card border border-border rounded-2xl p-5 pb-7 shadow-sm h-full flex flex-col">
             {/* Header */}
             <div className="flex items-center justify-between mb-4">
                 <h2 className="text-sm font-display font-bold text-text-muted uppercase tracking-widest">Comidas del Día</h2>
@@ -73,13 +73,13 @@ const MealPlanner: React.FC = () => {
             </div>
 
             {/* Horizontal meal grid */}
-            <div className={`grid gap-3`} style={{ gridTemplateColumns: `repeat(${mealCount}, minmax(0, 1fr))` }}>
+            <div className={`grid gap-3 flex-1`} style={{ gridTemplateColumns: `repeat(${mealCount}, minmax(0, 1fr))` }}>
                 {meals.map((meal) => {
                     const suggested = getSuggested(meal.id);
                     return (
                         <div
                             key={meal.id}
-                            className={`rounded-xl border px-3 py-5 flex flex-col gap-4 transition-all duration-300 min-h-[260px] ${
+                            className={`rounded-xl border px-3 py-5 flex flex-col gap-4 transition-all duration-300 min-h-[260px] h-full ${
                                 meal.completed ? 'bg-green-500/5 border-green-500/20' :
                                 meal.skipped ? 'opacity-50 border-border/40 bg-card/40' :
                                 isLight ? 'bg-black/[0.03] border-border hover:border-black/15' : 'bg-background/60 border-border hover:border-white/15'
