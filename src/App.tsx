@@ -317,7 +317,7 @@ const AppContent = () => {
       />
 
       {/* ═══════ MAIN CONTENT ═══════ */}
-      <main className="w-full md:w-[133.33%] px-4 md:px-6 pt-[calc(10rem+env(safe-area-inset-top,0px))] md:pt-32 pb-[calc(10rem+env(safe-area-inset-bottom,20px))] md:pb-6 relative z-10 space-y-4 md:scale-75 md:origin-top-left">
+      <main className="main-content w-full md:w-[133.33%] px-4 md:px-6 pt-[calc(10rem+env(safe-area-inset-top,0px))] md:pt-32 pb-[calc(10rem+env(safe-area-inset-bottom,20px))] md:pb-6 relative z-10 space-y-4">
         {/* Breadcrumbs */}
         {currentModule !== 'home' && (
           <nav className="flex items-center gap-2 text-[10px] md:text-sm text-text-muted mb-4 overflow-x-auto whitespace-nowrap pb-2 animate-fade-up" aria-label="Breadcrumb">
