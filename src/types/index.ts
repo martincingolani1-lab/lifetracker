@@ -178,4 +178,5 @@ export interface WeeklyHistoryData {
     supplementsTaken: number;
     totalSupplements: number;
     weight?: number;
+    nutritionSkipped?: boolean;
 }

@@ -642,16 +642,19 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
             const historyMap = new Map();
             data?.forEach(log => {
                 const dayData = log.data;
-                const totalCalories = (dayData.meals || []).reduce((acc: number, meal: Meal) => {
+                const meals: Meal[] = dayData.meals || [];
+                const allMealsSkipped = meals.length > 0 && meals.every((m: Meal) => m.skipped === true);
+
+                const totalCalories = allMealsSkipped ? 0 : meals.reduce((acc: number, meal: Meal) => {
                     if (!meal.completed) return acc;
                     return acc + (meal.targetMacros.protein * 4) + (meal.targetMacros.carbs * 4) + (meal.targetMacros.fats * 9);
                 }, 0);
 
-                const totalProtein = (dayData.meals || []).reduce((acc: number, m: Meal) => m.completed ? acc + m.targetMacros.protein : acc, 0) +
+                const totalProtein = allMealsSkipped ? 0 : meals.reduce((acc: number, m: Meal) => m.completed ? acc + m.targetMacros.protein : acc, 0) +
                     (dayData.fruitIntake ? (dayData.fruitIntake.apples * FRUIT_MACROS.apples.protein + dayData.fruitIntake.oranges * FRUIT_MACROS.oranges.protein + dayData.fruitIntake.bananas * FRUIT_MACROS.bananas.protein) : 0);
-                const totalCarbs = (dayData.meals || []).reduce((acc: number, m: Meal) => m.completed ? acc + m.targetMacros.carbs : acc, 0) +
+                const totalCarbs = allMealsSkipped ? 0 : meals.reduce((acc: number, m: Meal) => m.completed ? acc + m.targetMacros.carbs : acc, 0) +
                     (dayData.fruitIntake ? (dayData.fruitIntake.apples * FRUIT_MACROS.apples.carbs + dayData.fruitIntake.oranges * FRUIT_MACROS.oranges.carbs + dayData.fruitIntake.bananas * FRUIT_MACROS.bananas.carbs) : 0);
-                const totalFats = (dayData.meals || []).reduce((acc: number, m: Meal) => m.completed ? acc + m.targetMacros.fats : acc, 0) +
+                const totalFats = allMealsSkipped ? 0 : meals.reduce((acc: number, m: Meal) => m.completed ? acc + m.targetMacros.fats : acc, 0) +
                     (dayData.fruitIntake ? (dayData.fruitIntake.apples * FRUIT_MACROS.apples.fats + dayData.fruitIntake.oranges * FRUIT_MACROS.oranges.fats + dayData.fruitIntake.bananas * FRUIT_MACROS.bananas.fats) : 0);
 
                 const supplements = dayData.supplements || [];
@@ -664,10 +667,11 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
                     carbs: totalCarbs,
                     fats: totalFats,
                     water: dayData.waterIntake || 0,
-                    mealsCompleted: (dayData.meals || []).filter((m: Meal) => m.completed).length,
-                    totalMeals: (dayData.meals || []).filter((m: Meal) => !m.skipped).length || dayData.mealCount || 4,
+                    mealsCompleted: meals.filter((m: Meal) => m.completed).length,
+                    totalMeals: meals.filter((m: Meal) => !m.skipped).length || dayData.mealCount || 4,
                     supplementsTaken,
                     totalSupplements: supplements.length,
+                    nutritionSkipped: allMealsSkipped
                 });
             });
 

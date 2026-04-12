@@ -59,9 +59,12 @@ const AnalyticsDashboard: React.FC = () => {
     // Recent data (Last 14 days) for general metrics
     const calorieData = baseData.slice(-14);
 
-    // Averages (using recent 14 days)
-    const avgCalories = calorieData.length > 0
-        ? Math.round(calorieData.reduce((acc, d) => acc + d.calories, 0) / calorieData.length)
+    // Nutrition-only data: exclude days where all meals were skipped
+    const nutritionData = calorieData.filter(d => !d.nutritionSkipped);
+
+    // Averages (using recent 14 days, nutrition excludes skipped days)
+    const avgCalories = nutritionData.length > 0
+        ? Math.round(nutritionData.reduce((acc, d) => acc + d.calories, 0) / nutritionData.length)
         : 0;
 
     const avgWater = calorieData.length > 0
@@ -128,7 +131,7 @@ const AnalyticsDashboard: React.FC = () => {
                     <h3 className="font-bold text-text-main mb-6 uppercase tracking-widest text-sm text-center">Calorías Totales</h3>
                     <div className="h-[250px] w-full">
                         <ResponsiveContainer width="100%" height="100%">
-                            <AreaChart data={calorieData}>
+                            <AreaChart data={nutritionData}>
                                 <defs>
                                     <linearGradient id="colorKcal" x1="0" y1="0" x2="0" y2="1">
                                         <stop offset="5%" stopColor="var(--primary)" stopOpacity={0.3} />
@@ -158,7 +161,7 @@ const AnalyticsDashboard: React.FC = () => {
                     <h3 className="font-bold text-text-main mb-6 uppercase tracking-widest text-sm text-center">Distribución de Macros (%)</h3>
                     <div className="h-[250px] w-full">
                         <ResponsiveContainer width="100%" height="100%">
-                            <BarChart data={calorieData} margin={{ top: 20 }}>
+                            <BarChart data={nutritionData} margin={{ top: 20 }}>
                                 <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="rgba(255,255,255,0.05)" />
                                 <XAxis
                                     dataKey="displayName"
@@ -325,7 +328,7 @@ const AnalyticsDashboard: React.FC = () => {
                 <div>
                     <h4 className="font-black text-text-main text-sm uppercase tracking-wider mb-1">Coach Insight</h4>
                     <p className="text-sm text-text-muted italic leading-relaxed">
-                        {calorieData.length > 0
+                        {nutritionData.length > 0
                             ? `Has mantenido un promedio de ${avgCalories} kcal y ${avgWater}L de agua. Tu consistencia con la suplementación es del ${supplementConsistency}%, lo cual es ${supplementConsistency > 80 ? 'excelente' : 'mejorable'}. ¡Sigue así!`
                             : 'Registra al menos un día completo para recibir feedback personalizado.'}
                     </p>
