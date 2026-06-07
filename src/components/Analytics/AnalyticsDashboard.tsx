@@ -15,19 +15,43 @@ import {
 import { TrendingUp, Utensils, Award, Droplets, Pill } from 'lucide-react';
 import type { WeeklyHistoryData } from '../../types';
 
+const CACHE_KEY = 'lt_analytics_cache';
+const CACHE_TTL = 60 * 60 * 1000; // 1 hora
+const HISTORY_DAYS = 90;
+
 const AnalyticsDashboard: React.FC = () => {
-    const { getWeeklyHistory } = useUser();
+    const { getWeeklyHistory, session } = useUser();
     const [data, setData] = useState<WeeklyHistoryData[]>([]);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
+        const userId = session?.user?.id;
+        if (!userId) return;
+        const cacheKey = `${CACHE_KEY}_${userId}`;
+
         const fetchHistory = async () => {
-            const history = await getWeeklyHistory(365);
+            // Cache en localStorage para no re-descargar el histórico (egress de Supabase)
+            try {
+                const cached = localStorage.getItem(cacheKey);
+                if (cached) {
+                    const parsed = JSON.parse(cached) as { data: WeeklyHistoryData[]; timestamp: number };
+                    if (Date.now() - parsed.timestamp < CACHE_TTL && Array.isArray(parsed.data)) {
+                        setData(parsed.data);
+                        setLoading(false);
+                        return;
+                    }
+                }
+            } catch { /* cache corrupto: ignorar */ }
+
+            const history = await getWeeklyHistory(HISTORY_DAYS);
             setData(history);
             setLoading(false);
+            try {
+                localStorage.setItem(cacheKey, JSON.stringify({ data: history, timestamp: Date.now() }));
+            } catch { /* quota / modo privado */ }
         };
         fetchHistory();
-    }, [getWeeklyHistory]);
+    }, [getWeeklyHistory, session]);
 
     if (loading) {
         return (
